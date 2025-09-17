@@ -9,124 +9,18 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
     const [extractedRequirements, setExtractedRequirements] = useState(null);
     const navigate = useNavigate();
 
-    // Mock AI extraction function (for now, until we set up the backend)
-    const mockAIExtraction = (description) => {
-        const text = description.toLowerCase();
-
-        // Extract app name
-        let appName = 'Generated App';
-        if (text.includes('course') || text.includes('grade')) {
-            appName = 'Course Management System';
-        } else if (text.includes('shop') || text.includes('store') || text.includes('product')) {
-            appName = 'E-commerce Platform';
-        } else if (text.includes('task') || text.includes('project')) {
-            appName = 'Task Management System';
-        } else if (text.includes('blog') || text.includes('post')) {
-            appName = 'Blog Platform';
-        } else if (text.includes('inventory')) {
-            appName = 'Inventory Management';
-        }
-
-        // Extract entities
-        const entities = [];
-        const entityKeywords = {
-            'Student': ['student', 'pupil', 'learner'],
-            'Teacher': ['teacher', 'instructor', 'professor'],
-            'Course': ['course', 'class', 'subject'],
-            'Grade': ['grade', 'score', 'mark'],
-            'User': ['user', 'person', 'people'],
-            'Product': ['product', 'item', 'goods'],
-            'Order': ['order', 'purchase', 'transaction'],
-            'Customer': ['customer', 'client', 'buyer'],
-            'Task': ['task', 'assignment', 'job'],
-            'Project': ['project', 'initiative'],
-            'Post': ['post', 'article', 'blog'],
-            'Comment': ['comment', 'review', 'feedback'],
-            'Admin': ['admin', 'administrator', 'manager']
-        };
-
-        Object.keys(entityKeywords).forEach(entity => {
-            if (entityKeywords[entity].some(keyword => text.includes(keyword))) {
-                entities.push(entity);
-            }
-        });
-
-        if (entities.length === 0) {
-            entities.push('User', 'Item', 'Category');
-        }
-
-        // Extract roles
-        const roles = [];
-        const roleKeywords = {
-            'Admin': ['admin', 'administrator', 'manager'],
-            'Teacher': ['teacher', 'instructor', 'professor'],
-            'Student': ['student', 'pupil', 'learner'],
-            'Customer': ['customer', 'client', 'buyer'],
-            'Seller': ['seller', 'vendor', 'merchant'],
-            'User': ['user', 'member']
-        };
-
-        Object.keys(roleKeywords).forEach(role => {
-            if (roleKeywords[role].some(keyword => text.includes(keyword))) {
-                roles.push(role);
-            }
-        });
-
-        if (roles.length === 0) {
-            roles.push('Admin', 'User');
-        }
-
-        // Extract features
-        const features = [];
-        const featureKeywords = {
-            'Create Records': ['add', 'create', 'register', 'enroll'],
-            'View Reports': ['report', 'analytics', 'dashboard'],
-            'Manage Users': ['manage', 'edit', 'update', 'delete'],
-            'Upload Files': ['upload', 'file', 'document'],
-            'Send Messages': ['message', 'chat', 'communicate'],
-            'Track Progress': ['track', 'progress', 'monitor'],
-            'Generate Invoices': ['invoice', 'bill', 'payment'],
-            'Search Data': ['search', 'find', 'filter'],
-            'Export Data': ['export', 'download', 'backup']
-        };
-
-        Object.keys(featureKeywords).forEach(feature => {
-            if (featureKeywords[feature].some(keyword => text.includes(keyword))) {
-                features.push(feature);
-            }
-        });
-
-        if (features.length === 0) {
-            features.push('Create Records', 'View Data', 'Manage Settings');
-        }
-
-        return {
-            appName,
-            entities: [...new Set(entities)],
-            roles: [...new Set(roles)],
-            features: [...new Set(features)]
-        };
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!description.trim()) return;
 
         setLoading(true);
         try {
-            // For now, use mock AI extraction
-            // Later we'll replace this with actual API call
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API delay
-
-            const requirements = mockAIExtraction(description);
-
-            /*
-            // This is how we'll call the real API later:
+            // Call real backend API to extract requirements
             const response = await axios.post('http://localhost:5000/api/extract-requirements', {
-              description: description.trim()
+                description: description.trim()
             });
+
             const requirements = response.data;
-            */
 
             setExtractedRequirements(requirements);
             onRequirementsGenerated(requirements);
