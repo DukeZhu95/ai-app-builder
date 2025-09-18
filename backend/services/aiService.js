@@ -3,216 +3,44 @@ const axios = require('axios');
 class AIService {
     constructor() {
         this.openaiApiKey = process.env.OPENAI_API_KEY;
-        this.anthropicApiKey = process.env.ANTHROPIC_API_KEY;
-        this.cohereApiKey = process.env.COHERE_API_KEY;
     }
 
-    // Enhanced mock AI extraction with better intelligence
-    mockExtractRequirements(description) {
-        const text = description.toLowerCase();
-
-        // App name extraction with better logic
-        let appName = 'Generated App';
-        const appKeywords = {
-            'Course Management System': ['course', 'grade', 'student', 'teacher', 'education', 'school', 'university'],
-            'E-commerce Platform': ['shop', 'store', 'product', 'buy', 'sell', 'order', 'customer', 'cart', 'payment'],
-            'Task Management System': ['task', 'project', 'assignment', 'todo', 'workflow', 'team', 'collaborate'],
-            'Blog Platform': ['blog', 'post', 'article', 'write', 'publish', 'content', 'author'],
-            'Inventory Management': ['inventory', 'stock', 'warehouse', 'supply', 'goods', 'manage'],
-            'Customer Relationship Management': ['customer', 'client', 'crm', 'relationship', 'contact', 'lead'],
-            'Event Management System': ['event', 'booking', 'reservation', 'schedule', 'calendar', 'venue'],
-            'Hospital Management System': ['hospital', 'patient', 'doctor', 'medical', 'health', 'clinic'],
-            'Library Management System': ['library', 'book', 'borrow', 'return', 'catalog', 'member'],
-            'Restaurant Management System': ['restaurant', 'menu', 'order', 'food', 'dining', 'kitchen'],
-            'Real Estate Platform': ['property', 'real estate', 'house', 'rent', 'buy', 'listing'],
-            'Social Media Platform': ['social', 'post', 'follow', 'like', 'share', 'friend', 'feed'],
-            'Learning Management System': ['learning', 'course', 'lesson', 'quiz', 'exam', 'training'],
-            'HR Management System': ['employee', 'hr', 'payroll', 'attendance', 'leave', 'recruitment'],
-            'Financial Management System': ['finance', 'budget', 'expense', 'income', 'accounting', 'transaction']
-        };
-
-        // Find best matching app type
-        let maxScore = 0;
-        Object.keys(appKeywords).forEach(appType => {
-            const score = appKeywords[appType].filter(keyword => text.includes(keyword)).length;
-            if (score > maxScore) {
-                maxScore = score;
-                appName = appType;
-            }
-        });
-
-        // Entity extraction with context awareness
-        const entities = [];
-        const entityKeywords = {
-            'Student': ['student', 'pupil', 'learner', 'scholar'],
-            'Teacher': ['teacher', 'instructor', 'professor', 'educator', 'faculty'],
-            'Course': ['course', 'class', 'subject', 'lesson', 'module'],
-            'Grade': ['grade', 'score', 'mark', 'result', 'assessment'],
-            'User': ['user', 'person', 'people', 'member', 'individual'],
-            'Product': ['product', 'item', 'goods', 'merchandise'],
-            'Order': ['order', 'purchase', 'transaction', 'sale'],
-            'Customer': ['customer', 'client', 'buyer', 'consumer'],
-            'Task': ['task', 'assignment', 'job', 'activity', 'work'],
-            'Project': ['project', 'initiative', 'program'],
-            'Post': ['post', 'article', 'blog', 'content', 'publication'],
-            'Comment': ['comment', 'review', 'feedback', 'response'],
-            'Admin': ['admin', 'administrator', 'manager', 'supervisor'],
-            'Employee': ['employee', 'staff', 'worker', 'personnel'],
-            'Department': ['department', 'division', 'unit', 'section'],
-            'Category': ['category', 'type', 'group', 'classification'],
-            'Report': ['report', 'analytics', 'statistics', 'summary'],
-            'Event': ['event', 'meeting', 'appointment', 'booking'],
-            'Patient': ['patient', 'client', 'case'],
-            'Doctor': ['doctor', 'physician', 'medical'],
-            'Book': ['book', 'publication', 'volume'],
-            'Author': ['author', 'writer', 'creator'],
-            'Invoice': ['invoice', 'bill', 'receipt'],
-            'Payment': ['payment', 'transaction', 'billing'],
-            'Room': ['room', 'space', 'venue', 'location'],
-            'Menu': ['menu', 'dish', 'meal', 'food'],
-            'Property': ['property', 'house', 'apartment', 'listing']
-        };
-
-        Object.keys(entityKeywords).forEach(entity => {
-            const matchCount = entityKeywords[entity].filter(keyword => text.includes(keyword)).length;
-            if (matchCount > 0) {
-                entities.push(entity);
-            }
-        });
-
-        // Ensure minimum entities
-        if (entities.length === 0) {
-            entities.push('User', 'Item', 'Category');
-        } else if (entities.length === 1) {
-            entities.push('User');
-        }
-
-        // Role extraction with context
-        const roles = [];
-        const roleKeywords = {
-            'Admin': ['admin', 'administrator', 'manager', 'supervisor'],
-            'Teacher': ['teacher', 'instructor', 'professor', 'educator'],
-            'Student': ['student', 'pupil', 'learner', 'scholar'],
-            'Customer': ['customer', 'client', 'buyer', 'consumer'],
-            'Seller': ['seller', 'vendor', 'merchant', 'supplier'],
-            'Employee': ['employee', 'staff', 'worker', 'personnel'],
-            'Doctor': ['doctor', 'physician', 'medical professional'],
-            'Patient': ['patient', 'client'],
-            'Author': ['author', 'writer', 'blogger', 'content creator'],
-            'Reader': ['reader', 'subscriber', 'viewer'],
-            'Manager': ['manager', 'supervisor', 'lead', 'coordinator'],
-            'Owner': ['owner', 'proprietor', 'landlord'],
-            'Tenant': ['tenant', 'renter', 'occupant'],
-            'Moderator': ['moderator', 'moderates', 'moderate'],
-            'User': ['user', 'member', 'participant']
-        };
-
-        Object.keys(roleKeywords).forEach(role => {
-            const matchCount = roleKeywords[role].filter(keyword => text.includes(keyword)).length;
-            if (matchCount > 0) {
-                roles.push(role);
-            }
-        });
-
-        // Ensure minimum roles
-        if (roles.length === 0) {
-            roles.push('Admin', 'User');
-        } else if (roles.length === 1 && !roles.includes('Admin')) {
-            roles.push('Admin');
-        }
-
-        // Feature extraction with intelligent mapping
-        const features = [];
-        const featureKeywords = {
-            'Create Records': ['add', 'create', 'register', 'enroll', 'insert', 'new'],
-            'Edit Records': ['edit', 'update', 'modify', 'change', 'revise'],
-            'Delete Records': ['delete', 'remove', 'eliminate', 'drop'],
-            'View Reports': ['report', 'analytics', 'dashboard', 'statistics', 'summary'],
-            'Manage Users': ['manage', 'administer', 'control', 'oversee'],
-            'Upload Files': ['upload', 'file', 'document', 'attach', 'import'],
-            'Download Data': ['download', 'export', 'backup', 'save'],
-            'Send Messages': ['message', 'chat', 'communicate', 'notify', 'email'],
-            'Track Progress': ['track', 'progress', 'monitor', 'follow', 'observe'],
-            'Generate Invoices': ['invoice', 'bill', 'payment', 'charge', 'billing'],
-            'Search Data': ['search', 'find', 'filter', 'query', 'lookup'],
-            'Schedule Events': ['schedule', 'calendar', 'appointment', 'booking'],
-            'Approve Requests': ['approve', 'authorize', 'confirm', 'validate'],
-            'Assign Tasks': ['assign', 'allocate', 'delegate', 'distribute'],
-            'Grade Submissions': ['grade', 'score', 'evaluate', 'assess', 'mark'],
-            'Process Orders': ['order', 'purchase', 'transaction', 'process'],
-            'Manage Inventory': ['inventory', 'stock', 'supply', 'warehouse'],
-            'Generate Reports': ['generate', 'produce', 'create report'],
-            'Backup Data': ['backup', 'archive', 'store', 'preserve'],
-            'Authentication': ['login', 'signin', 'authenticate', 'access'],
-            'Role Management': ['role', 'permission', 'access control'],
-            'Notification System': ['notification', 'alert', 'reminder', 'notice']
-        };
-
-        Object.keys(featureKeywords).forEach(feature => {
-            const matchCount = featureKeywords[feature].filter(keyword => text.includes(keyword)).length;
-            if (matchCount > 0) {
-                features.push(feature);
-            }
-        });
-
-        // Add context-specific features based on app type
-        if (appName.includes('Course') || appName.includes('Learning')) {
-            if (!features.some(f => f.includes('Grade'))) features.push('Grade Submissions');
-            if (!features.some(f => f.includes('Schedule'))) features.push('Schedule Classes');
-        }
-
-        if (appName.includes('E-commerce') || appName.includes('Store')) {
-            if (!features.some(f => f.includes('Order'))) features.push('Process Orders');
-            if (!features.some(f => f.includes('Inventory'))) features.push('Manage Inventory');
-        }
-
-        if (appName.includes('Task') || appName.includes('Project')) {
-            if (!features.some(f => f.includes('Assign'))) features.push('Assign Tasks');
-            if (!features.some(f => f.includes('Track'))) features.push('Track Progress');
-        }
-
-        // Ensure minimum features
-        if (features.length === 0) {
-            features.push('Create Records', 'View Data', 'Manage Settings');
-        } else if (features.length === 1) {
-            features.push('View Data', 'Manage Settings');
-        }
-
-        return {
-            appName,
-            entities: [...new Set(entities)].slice(0, 8), // Limit to 8 entities
-            roles: [...new Set(roles)].slice(0, 6), // Limit to 6 roles
-            features: [...new Set(features)].slice(0, 10) // Limit to 10 features
-        };
-    }
-
-    // OpenAI GPT integration
+    // Enhanced OpenAI GPT integration with comprehensive prompting
     async extractWithOpenAI(description) {
         if (!this.openaiApiKey) {
             throw new Error('OpenAI API key not configured');
         }
 
-        const prompt = `
-You are an expert system analyst. Analyze the following app description and extract structured requirements.
+        const systemPrompt = `You are an expert system analyst and software architect. Your job is to analyze app descriptions and extract structured requirements for building applications.
 
-App Description: "${description}"
-
-Please extract and return a JSON object with exactly these fields:
+You must return ONLY valid JSON in this exact format:
 {
-  "appName": "A concise, descriptive name for the app",
-  "entities": ["List of main data entities/objects in the app"],
-  "roles": ["List of user roles/types who will use the app"],
-  "features": ["List of key features/functionalities the app should have"]
+  "appName": "A professional, descriptive name for the application",
+  "entities": ["Array of main data objects/entities the app manages"],
+  "roles": ["Array of user types who will interact with the app"],
+  "features": ["Array of key functionalities the app should provide"]
 }
 
 Guidelines:
-- appName: Should be professional and descriptive (e.g., "Student Course Management System")
-- entities: Main objects/data types (e.g., "Student", "Course", "Grade") - max 8
-- roles: User types (e.g., "Admin", "Teacher", "Student") - max 6  
-- features: Key functionalities (e.g., "Create Course", "Assign Grades") - max 10
-- Return only valid JSON, no additional text
+- appName: Should be clear and professional (e.g., "Forum Discussion Platform", "E-commerce Store", "Chess Game Portal")
+- entities: Core data objects (e.g., for a forum: ["Post", "User", "Comment", "Category"])
+- roles: User types (e.g., ["Admin", "Moderator", "Member", "Guest"])
+- features: Key functionalities (e.g., ["Create Post", "Reply to Comments", "Moderate Content"])
+- Maximum 8 entities, 6 roles, 10 features
+- Be creative and comprehensive based on the description
+- Consider the app's domain and purpose carefully`;
 
-Analyze the description and extract requirements:`;
+        const userPrompt = `Analyze this app description and extract requirements:
+
+"${description}"
+
+Think about:
+1. What type of application is this? (e.g., social platform, game, e-commerce, management system)
+2. What are the main data objects it needs to manage?
+3. Who are the different types of users?
+4. What key actions/features should it support?
+
+Return only the JSON object with extracted requirements.`;
 
         try {
             const response = await axios.post(
@@ -222,15 +50,16 @@ Analyze the description and extract requirements:`;
                     messages: [
                         {
                             role: 'system',
-                            content: 'You are a helpful assistant that extracts app requirements and returns only valid JSON.'
+                            content: systemPrompt
                         },
                         {
                             role: 'user',
-                            content: prompt
+                            content: userPrompt
                         }
                     ],
-                    max_tokens: 500,
-                    temperature: 0.3
+                    max_tokens: 800,
+                    temperature: 0.3, // Lower temperature for more consistent output
+                    top_p: 0.9
                 },
                 {
                     headers: {
@@ -241,45 +70,211 @@ Analyze the description and extract requirements:`;
             );
 
             const content = response.data.choices[0].message.content.trim();
+            console.log('🤖 OpenAI Raw Response:', content);
 
             // Try to parse the JSON response
             let result;
             try {
-                result = JSON.parse(content);
+                // Remove any markdown code block formatting
+                const cleanContent = content.replace(/```json\n?|\n?```/g, '').trim();
+                result = JSON.parse(cleanContent);
             } catch (parseError) {
-                console.log('Failed to parse OpenAI response, using mock extraction');
-                return this.mockExtractRequirements(description);
+                console.error('Failed to parse OpenAI response:', parseError);
+                console.log('Raw content:', content);
+                throw new Error('AI returned invalid JSON format');
             }
 
             // Validate and clean the result
-            return {
-                appName: result.appName || 'Generated App',
-                entities: Array.isArray(result.entities) ? result.entities.slice(0, 8) : ['User', 'Item'],
-                roles: Array.isArray(result.roles) ? result.roles.slice(0, 6) : ['Admin', 'User'],
-                features: Array.isArray(result.features) ? result.features.slice(0, 10) : ['Create Records', 'View Data']
+            const cleanedResult = {
+                appName: result.appName || 'AI Generated App',
+                entities: Array.isArray(result.entities) ? result.entities.slice(0, 8).filter(e => e && e.trim()) : ['User', 'Item'],
+                roles: Array.isArray(result.roles) ? result.roles.slice(0, 6).filter(r => r && r.trim()) : ['Admin', 'User'],
+                features: Array.isArray(result.features) ? result.features.slice(0, 10).filter(f => f && f.trim()) : ['Create Records', 'View Data']
             };
+
+            // Ensure minimum requirements
+            if (cleanedResult.entities.length === 0) cleanedResult.entities = ['User', 'Item'];
+            if (cleanedResult.roles.length === 0) cleanedResult.roles = ['Admin', 'User'];
+            if (cleanedResult.features.length === 0) cleanedResult.features = ['Create Records', 'View Data'];
+
+            return cleanedResult;
 
         } catch (error) {
             console.error('OpenAI API Error:', error.response?.data || error.message);
 
             if (error.response?.status === 429) {
-                throw new Error('OpenAI rate limit exceeded');
+                throw new Error('OpenAI rate limit exceeded. Please try again in a moment.');
             }
 
-            // Fallback to mock extraction
-            console.log('Falling back to mock extraction due to OpenAI error');
-            return this.mockExtractRequirements(description);
+            if (error.response?.status === 401) {
+                throw new Error('Invalid OpenAI API key. Please check your configuration.');
+            }
+
+            if (error.response?.status === 400) {
+                throw new Error('Invalid request to OpenAI API.');
+            }
+
+            // Re-throw the error to be handled by fallback
+            throw error;
         }
     }
 
-    // Main extraction method - tries different AI services
+    // Intelligent fallback extraction for when OpenAI is unavailable
+    intelligentFallbackExtraction(description) {
+        console.log('🔧 Using intelligent fallback extraction');
+
+        const text = description.toLowerCase();
+
+        // Comprehensive app type detection
+        const appTypes = {
+            'Forum Platform': ['forum', 'discussion', 'community', 'thread', 'reply', 'post discussion'],
+            'E-commerce Platform': ['shop', 'store', 'buy', 'sell', 'product', 'cart', 'checkout', 'order', 'ecommerce'],
+            'Social Media Platform': ['social', 'follow', 'like', 'share', 'post', 'feed', 'friend', 'profile'],
+            'Gaming Platform': ['game', 'play', 'player', 'match', 'score', 'level', 'chess', 'puzzle'],
+            'Blog Platform': ['blog', 'article', 'write', 'publish', 'author', 'content', 'wordpress'],
+            'Learning Management System': ['course', 'lesson', 'student', 'teacher', 'quiz', 'assignment', 'grade'],
+            'Task Management System': ['task', 'todo', 'project', 'assign', 'team', 'workflow', 'kanban'],
+            'Chat Application': ['chat', 'message', 'conversation', 'real-time', 'instant', 'messenger'],
+            'Music Platform': ['music', 'song', 'artist', 'playlist', 'stream', 'listen', 'album'],
+            'Video Platform': ['video', 'watch', 'stream', 'upload', 'channel', 'youtube', 'content'],
+            'Dating Platform': ['dating', 'match', 'profile', 'swipe', 'relationship', 'meet'],
+            'Food Delivery Platform': ['food', 'restaurant', 'order', 'delivery', 'menu', 'cuisine'],
+            'Real Estate Platform': ['property', 'house', 'rent', 'buy', 'listing', 'real estate'],
+            'Fitness Platform': ['fitness', 'workout', 'exercise', 'health', 'gym', 'training'],
+            'News Platform': ['news', 'article', 'journalist', 'report', 'breaking', 'headline'],
+            'Event Management System': ['event', 'booking', 'ticket', 'venue', 'calendar', 'schedule'],
+            'Inventory Management System': ['inventory', 'stock', 'warehouse', 'supply', 'manage goods'],
+            'CRM Platform': ['customer', 'crm', 'lead', 'sales', 'contact', 'relationship'],
+            'Healthcare Platform': ['patient', 'doctor', 'medical', 'health', 'hospital', 'clinic'],
+            'Financial Platform': ['finance', 'money', 'budget', 'expense', 'accounting', 'transaction'],
+            'Travel Platform': ['travel', 'trip', 'hotel', 'flight', 'booking', 'destination'],
+            'Recipe Platform': ['recipe', 'cooking', 'ingredient', 'meal', 'food', 'kitchen']
+        };
+
+        // Find the best matching app type
+        let appName = 'Application Platform';
+        let maxScore = 0;
+
+        for (const [type, keywords] of Object.entries(appTypes)) {
+            const score = keywords.filter(keyword => text.includes(keyword)).length;
+            if (score > maxScore) {
+                maxScore = score;
+                appName = type;
+            }
+        }
+
+        // Generate entities based on app type and description
+        const entities = this.generateEntitiesForAppType(appName, text);
+
+        // Generate roles based on app type and description
+        const roles = this.generateRolesForAppType(appName, text);
+
+        // Generate features based on app type and description
+        const features = this.generateFeaturesForAppType(appName, text);
+
+        return {
+            appName,
+            entities: [...new Set(entities)].slice(0, 8),
+            roles: [...new Set(roles)].slice(0, 6),
+            features: [...new Set(features)].slice(0, 10)
+        };
+    }
+
+    generateEntitiesForAppType(appName, text) {
+        const entityMap = {
+            'Forum Platform': ['User', 'Post', 'Comment', 'Category', 'Thread', 'Tag'],
+            'E-commerce Platform': ['Product', 'Order', 'Customer', 'Category', 'Cart', 'Payment', 'Review'],
+            'Social Media Platform': ['User', 'Post', 'Comment', 'Like', 'Follow', 'Message', 'Photo'],
+            'Gaming Platform': ['Player', 'Game', 'Score', 'Level', 'Achievement', 'Match'],
+            'Blog Platform': ['Post', 'Author', 'Comment', 'Category', 'Tag', 'Reader'],
+            'Learning Management System': ['Student', 'Teacher', 'Course', 'Assignment', 'Grade', 'Lesson'],
+            'Task Management System': ['Task', 'User', 'Project', 'Team', 'Assignment', 'Status'],
+            'Chat Application': ['User', 'Message', 'Conversation', 'Group', 'Channel'],
+            'Music Platform': ['Song', 'Artist', 'Album', 'Playlist', 'User', 'Genre'],
+            'Video Platform': ['Video', 'Channel', 'User', 'Comment', 'Playlist', 'Category'],
+            'Dating Platform': ['Profile', 'Match', 'Message', 'Photo', 'Preference'],
+            'Food Delivery Platform': ['Restaurant', 'Menu', 'Order', 'Customer', 'Delivery', 'Review'],
+            'Real Estate Platform': ['Property', 'Agent', 'Client', 'Listing', 'Location', 'Photo'],
+            'Fitness Platform': ['User', 'Workout', 'Exercise', 'Goal', 'Progress', 'Trainer'],
+            'News Platform': ['Article', 'Author', 'Category', 'Comment', 'Reader', 'Tag'],
+            'Event Management System': ['Event', 'Ticket', 'Venue', 'Organizer', 'Attendee'],
+            'Inventory Management System': ['Product', 'Stock', 'Supplier', 'Order', 'Category'],
+            'CRM Platform': ['Customer', 'Lead', 'Deal', 'Contact', 'Activity', 'Sales'],
+            'Healthcare Platform': ['Patient', 'Doctor', 'Appointment', 'Medical Record', 'Treatment'],
+            'Financial Platform': ['Account', 'Transaction', 'Budget', 'Category', 'User', 'Report'],
+            'Travel Platform': ['Trip', 'Hotel', 'Flight', 'Booking', 'Traveler', 'Review'],
+            'Recipe Platform': ['Recipe', 'Ingredient', 'User', 'Category', 'Review', 'Photo']
+        };
+
+        return entityMap[appName] || ['User', 'Item', 'Category', 'Tag'];
+    }
+
+    generateRolesForAppType(appName, text) {
+        const roleMap = {
+            'Forum Platform': ['Admin', 'Moderator', 'Member', 'Guest'],
+            'E-commerce Platform': ['Admin', 'Seller', 'Customer', 'Support'],
+            'Social Media Platform': ['User', 'Influencer', 'Moderator', 'Admin'],
+            'Gaming Platform': ['Player', 'Admin', 'Spectator', 'Tournament Organizer'],
+            'Blog Platform': ['Author', 'Reader', 'Editor', 'Admin'],
+            'Learning Management System': ['Teacher', 'Student', 'Admin', 'Parent'],
+            'Task Management System': ['Manager', 'Team Member', 'Client', 'Admin'],
+            'Chat Application': ['User', 'Moderator', 'Admin', 'Bot'],
+            'Music Platform': ['Listener', 'Artist', 'Admin', 'Curator'],
+            'Video Platform': ['Creator', 'Viewer', 'Moderator', 'Admin'],
+            'Dating Platform': ['User', 'Premium User', 'Moderator', 'Admin'],
+            'Food Delivery Platform': ['Customer', 'Restaurant Owner', 'Delivery Driver', 'Admin'],
+            'Real Estate Platform': ['Agent', 'Buyer', 'Seller', 'Admin'],
+            'Fitness Platform': ['User', 'Trainer', 'Nutritionist', 'Admin'],
+            'News Platform': ['Reader', 'Journalist', 'Editor', 'Admin'],
+            'Event Management System': ['Organizer', 'Attendee', 'Vendor', 'Admin'],
+            'Inventory Management System': ['Manager', 'Staff', 'Supplier', 'Admin'],
+            'CRM Platform': ['Sales Rep', 'Manager', 'Customer', 'Admin'],
+            'Healthcare Platform': ['Doctor', 'Patient', 'Nurse', 'Admin'],
+            'Financial Platform': ['User', 'Advisor', 'Admin', 'Auditor'],
+            'Travel Platform': ['Traveler', 'Agent', 'Hotel Manager', 'Admin'],
+            'Recipe Platform': ['Cook', 'Reader', 'Chef', 'Admin']
+        };
+
+        return roleMap[appName] || ['Admin', 'User', 'Guest'];
+    }
+
+    generateFeaturesForAppType(appName, text) {
+        const featureMap = {
+            'Forum Platform': ['Create Post', 'Reply to Posts', 'Moderate Content', 'Search Posts', 'User Profiles', 'Vote on Posts'],
+            'E-commerce Platform': ['Browse Products', 'Add to Cart', 'Checkout', 'Manage Orders', 'Product Reviews', 'Payment Processing'],
+            'Social Media Platform': ['Create Post', 'Like Content', 'Follow Users', 'Share Content', 'Direct Messages', 'Story Feature'],
+            'Gaming Platform': ['Start Game', 'Save Progress', 'Leaderboard', 'Multiplayer Mode', 'Achievements', 'Game History'],
+            'Blog Platform': ['Write Posts', 'Comment System', 'Category Management', 'SEO Tools', 'User Subscriptions'],
+            'Learning Management System': ['Create Courses', 'Submit Assignments', 'Grade Students', 'Track Progress', 'Online Quizzes'],
+            'Task Management System': ['Create Tasks', 'Assign Tasks', 'Track Progress', 'Team Collaboration', 'Deadline Management'],
+            'Chat Application': ['Send Messages', 'Group Chats', 'File Sharing', 'Video Calls', 'Message History'],
+            'Music Platform': ['Play Music', 'Create Playlists', 'Discover Music', 'Download Songs', 'Artist Profiles'],
+            'Video Platform': ['Upload Videos', 'Watch Videos', 'Subscribe to Channels', 'Comment System', 'Video Recommendations'],
+            'Dating Platform': ['Create Profile', 'Browse Profiles', 'Send Messages', 'Match System', 'Privacy Settings'],
+            'Food Delivery Platform': ['Browse Restaurants', 'Place Orders', 'Track Delivery', 'Rate Food', 'Payment Integration'],
+            'Real Estate Platform': ['List Properties', 'Search Properties', 'Schedule Viewings', 'Contact Agents', 'Property Photos'],
+            'Fitness Platform': ['Track Workouts', 'Set Goals', 'Progress Analytics', 'Social Features', 'Exercise Library'],
+            'News Platform': ['Read Articles', 'Comment on News', 'Share Articles', 'Breaking News Alerts', 'Category Filters'],
+            'Event Management System': ['Create Events', 'Book Tickets', 'Manage Attendees', 'Send Invitations', 'Event Calendar'],
+            'Inventory Management System': ['Track Stock', 'Manage Suppliers', 'Generate Reports', 'Order Management', 'Stock Alerts'],
+            'CRM Platform': ['Manage Contacts', 'Track Leads', 'Sales Pipeline', 'Customer History', 'Report Generation'],
+            'Healthcare Platform': ['Book Appointments', 'Medical Records', 'Prescription Management', 'Doctor Consultation'],
+            'Financial Platform': ['Track Expenses', 'Budget Planning', 'Investment Tracking', 'Bill Reminders', 'Financial Reports'],
+            'Travel Platform': ['Search Flights', 'Book Hotels', 'Trip Planning', 'Travel Reviews', 'Itinerary Management'],
+            'Recipe Platform': ['Search Recipes', 'Save Favorites', 'Meal Planning', 'Shopping Lists', 'Recipe Reviews']
+        };
+
+        return featureMap[appName] || ['Create Records', 'View Data', 'Search Content', 'User Management', 'Settings'];
+    }
+
+    // Main extraction method - tries OpenAI first, falls back to intelligent extraction
     async extractRequirements(description) {
         const startTime = Date.now();
 
         try {
-            // Try OpenAI first if available
-            if (this.openaiApiKey && process.env.NODE_ENV === 'production') {
-                console.log('🤖 Using OpenAI for requirement extraction');
+            // Try OpenAI first if API key is available
+            if (this.openaiApiKey && this.openaiApiKey !== 'sk-your-actual-openai-api-key-here') {
+                console.log('🤖 Using OpenAI GPT for requirement extraction');
                 const result = await this.extractWithOpenAI(description);
 
                 return {
@@ -288,21 +283,21 @@ Analyze the description and extract requirements:`;
                         extractedAt: new Date().toISOString(),
                         processingTime: Date.now() - startTime,
                         model: 'openai-gpt-3.5-turbo',
-                        confidence: 0.9
+                        confidence: 0.95
                     }
                 };
             }
 
-            // Fallback to enhanced mock extraction
-            console.log('🔧 Using enhanced mock extraction');
-            const result = this.mockExtractRequirements(description);
+            // Fallback to intelligent extraction
+            console.log('🔧 OpenAI not configured, using intelligent fallback extraction');
+            const result = this.intelligentFallbackExtraction(description);
 
             return {
                 ...result,
                 metadata: {
                     extractedAt: new Date().toISOString(),
                     processingTime: Date.now() - startTime,
-                    model: 'enhanced-mock',
+                    model: 'intelligent-fallback',
                     confidence: 0.8
                 }
             };
@@ -310,15 +305,16 @@ Analyze the description and extract requirements:`;
         } catch (error) {
             console.error('AI Service Error:', error.message);
 
-            // Ultimate fallback
-            const result = this.mockExtractRequirements(description);
+            // Ultimate fallback - still provide a reasonable response
+            console.log('⚠️ Falling back to basic extraction due to error');
+            const result = this.intelligentFallbackExtraction(description);
 
             return {
                 ...result,
                 metadata: {
                     extractedAt: new Date().toISOString(),
                     processingTime: Date.now() - startTime,
-                    model: 'fallback-mock',
+                    model: 'fallback-basic',
                     confidence: 0.7,
                     error: error.message
                 }
@@ -354,12 +350,15 @@ Analyze the description and extract requirements:`;
 
     // Get service status
     getStatus() {
+        const hasValidOpenAI = this.openaiApiKey &&
+            this.openaiApiKey !== 'your_openai_api_key_here' &&
+            this.openaiApiKey !== 'sk-your-actual-openai-api-key-here';
+
         return {
-            openai: !!this.openaiApiKey,
-            anthropic: !!this.anthropicApiKey,
-            cohere: !!this.cohereApiKey,
-            fallback: true, // Mock extraction always available
-            recommended: this.openaiApiKey ? 'openai' : 'mock'
+            openaiConfigured: hasValidOpenAI,
+            fallbackAvailable: true,
+            recommended: hasValidOpenAI ? 'openai' : 'intelligent-fallback',
+            status: hasValidOpenAI ? 'ready' : 'fallback-mode'
         };
     }
 }

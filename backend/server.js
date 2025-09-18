@@ -49,6 +49,10 @@ const connectDB = async () => {
 // Connect to Database
 connectDB();
 
+// Test AI Service on startup
+const aiService = require('./services/aiService');
+console.log('🤖 AI Service Status:', aiService.getStatus());
+
 // Routes
 app.use('/api', require('./routes/api'));
 
