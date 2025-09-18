@@ -1,12 +1,41 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Database, Settings, Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { ArrowLeft, User, Database, Settings, Plus, Edit, Trash2, Eye, Save, Check } from 'lucide-react';
+import axios from 'axios';
 
 const GeneratedApp = ({ requirements }) => {
     const [activeTab, setActiveTab] = useState(requirements.roles[0] || 'Main');
     const [activeEntity, setActiveEntity] = useState(requirements.entities[0] || '');
     const [formData, setFormData] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
     const navigate = useNavigate();
+
+    // Save app to database
+    const handleSaveApp = async () => {
+        setIsSaving(true);
+        try {
+            const response = await axios.post('http://localhost:5000/api/save-app', {
+                appName: requirements.appName,
+                entities: requirements.entities,
+                roles: requirements.roles,
+                features: requirements.features,
+                description: requirements.metadata?.originalDescription || 'AI Generated Application'
+            });
+
+            console.log('App saved successfully:', response.data);
+            setIsSaved(true);
+
+            // Reset saved status after 3 seconds
+            setTimeout(() => setIsSaved(false), 3000);
+
+        } catch (error) {
+            console.error('Error saving app:', error);
+            alert('Failed to save app. Please try again.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     // Generate appropriate form fields for each entity
     const generateEntityFields = (entityName) => {
@@ -32,33 +61,33 @@ const GeneratedApp = ({ requirements }) => {
                 { name: 'description', type: 'textarea', label: 'Description', placeholder: 'Course description...' },
                 { name: 'instructor', type: 'text', label: 'Instructor', placeholder: 'Dr. Smith' }
             ],
-            'Grade': [
-                { name: 'student', type: 'text', label: 'Student Name', placeholder: 'John Doe' },
-                { name: 'course', type: 'text', label: 'Course', placeholder: 'CS101' },
-                { name: 'grade', type: 'text', label: 'Grade', placeholder: 'A' },
-                { name: 'semester', type: 'text', label: 'Semester', placeholder: 'Fall 2024' },
-                { name: 'points', type: 'number', label: 'Points', placeholder: '95' }
+            'Workout': [
+                { name: 'name', type: 'text', label: 'Workout Name', placeholder: 'Morning Run' },
+                { name: 'type', type: 'select', label: 'Exercise Type', options: ['Cardio', 'Strength', 'Flexibility', 'Sports'] },
+                { name: 'duration', type: 'number', label: 'Duration (minutes)', placeholder: '30' },
+                { name: 'calories', type: 'number', label: 'Calories Burned', placeholder: '250' },
+                { name: 'date', type: 'date', label: 'Workout Date' }
             ],
-            'Product': [
-                { name: 'name', type: 'text', label: 'Product Name', placeholder: 'Enter product name' },
-                { name: 'price', type: 'number', label: 'Price ($)', placeholder: '99.99' },
-                { name: 'category', type: 'text', label: 'Category', placeholder: 'Electronics' },
-                { name: 'description', type: 'textarea', label: 'Description', placeholder: 'Product description...' },
-                { name: 'stock', type: 'number', label: 'Stock Quantity', placeholder: '50' }
+            'Nutrition': [
+                { name: 'meal', type: 'select', label: 'Meal Type', options: ['Breakfast', 'Lunch', 'Dinner', 'Snack'] },
+                { name: 'food', type: 'text', label: 'Food Item', placeholder: 'Grilled Chicken Salad' },
+                { name: 'calories', type: 'number', label: 'Calories', placeholder: '350' },
+                { name: 'protein', type: 'number', label: 'Protein (g)', placeholder: '25' },
+                { name: 'date', type: 'date', label: 'Date' }
             ],
-            'Order': [
-                { name: 'orderId', type: 'text', label: 'Order ID', placeholder: 'ORD001' },
-                { name: 'customer', type: 'text', label: 'Customer Name', placeholder: 'John Doe' },
-                { name: 'total', type: 'number', label: 'Total Amount ($)', placeholder: '299.99' },
-                { name: 'status', type: 'select', label: 'Status', options: ['Pending', 'Processing', 'Shipped', 'Delivered'] },
-                { name: 'date', type: 'date', label: 'Order Date' }
+            'Fitness Goal': [
+                { name: 'title', type: 'text', label: 'Goal Title', placeholder: 'Lose 10 pounds' },
+                { name: 'category', type: 'select', label: 'Category', options: ['Weight Loss', 'Muscle Gain', 'Endurance', 'Strength'] },
+                { name: 'target', type: 'number', label: 'Target Value', placeholder: '10' },
+                { name: 'current', type: 'number', label: 'Current Progress', placeholder: '2' },
+                { name: 'deadline', type: 'date', label: 'Target Date' }
             ],
-            'Task': [
-                { name: 'title', type: 'text', label: 'Task Title', placeholder: 'Complete project proposal' },
-                { name: 'description', type: 'textarea', label: 'Description', placeholder: 'Task description...' },
-                { name: 'assignee', type: 'text', label: 'Assigned To', placeholder: 'John Doe' },
-                { name: 'priority', type: 'select', label: 'Priority', options: ['Low', 'Medium', 'High', 'Urgent'] },
-                { name: 'dueDate', type: 'date', label: 'Due Date' }
+            'Personal Trainer': [
+                { name: 'name', type: 'text', label: 'Trainer Name', placeholder: 'John Smith' },
+                { name: 'specialization', type: 'text', label: 'Specialization', placeholder: 'Weight Training' },
+                { name: 'experience', type: 'number', label: 'Years Experience', placeholder: '5' },
+                { name: 'rating', type: 'number', label: 'Rating (1-5)', placeholder: '4.8' },
+                { name: 'hourlyRate', type: 'number', label: 'Hourly Rate ($)', placeholder: '75' }
             ],
             'User': [
                 { name: 'name', type: 'text', label: 'Full Name', placeholder: 'Enter full name' },
@@ -80,6 +109,18 @@ const GeneratedApp = ({ requirements }) => {
     // Generate role-specific features and actions
     const generateRoleFeatures = (role) => {
         const roleFeatureMappings = {
+            'User': [
+                { name: 'Log Workout', icon: Plus, color: 'blue', description: 'Record your exercise sessions' },
+                { name: 'Track Nutrition', icon: Database, color: 'green', description: 'Monitor your daily food intake' },
+                { name: 'View Progress', icon: Eye, color: 'purple', description: 'Check your fitness progress' },
+                { name: 'Set Goals', icon: Settings, color: 'orange', description: 'Define your fitness objectives' }
+            ],
+            'Personal Trainer': [
+                { name: 'Manage Clients', icon: User, color: 'blue', description: 'Oversee client fitness programs' },
+                { name: 'Create Workouts', icon: Plus, color: 'green', description: 'Design custom workout plans' },
+                { name: 'Track Client Progress', icon: Eye, color: 'purple', description: 'Monitor client achievements' },
+                { name: 'Schedule Sessions', icon: Settings, color: 'orange', description: 'Manage training appointments' }
+            ],
             'Teacher': [
                 { name: 'Create Course', icon: Plus, color: 'blue', description: 'Add new courses to the system' },
                 { name: 'Grade Students', icon: Edit, color: 'green', description: 'Assign grades to student submissions' },
@@ -97,18 +138,6 @@ const GeneratedApp = ({ requirements }) => {
                 { name: 'Generate Reports', icon: Database, color: 'blue', description: 'Create system-wide reports' },
                 { name: 'System Settings', icon: Settings, color: 'gray', description: 'Configure application settings' },
                 { name: 'View Analytics', icon: Eye, color: 'green', description: 'Monitor system usage and performance' }
-            ],
-            'Customer': [
-                { name: 'Browse Products', icon: Eye, color: 'blue', description: 'Explore available products' },
-                { name: 'Place Orders', icon: Plus, color: 'green', description: 'Purchase items from the store' },
-                { name: 'Track Orders', icon: Database, color: 'orange', description: 'Monitor order status and delivery' },
-                { name: 'Manage Profile', icon: User, color: 'purple', description: 'Update personal information' }
-            ],
-            'Manager': [
-                { name: 'View Dashboard', icon: Eye, color: 'blue', description: 'Access executive dashboard' },
-                { name: 'Manage Team', icon: User, color: 'green', description: 'Oversee team members and assignments' },
-                { name: 'Approve Requests', icon: Settings, color: 'orange', description: 'Review and approve various requests' },
-                { name: 'Generate Reports', icon: Database, color: 'purple', description: 'Create management reports' }
             ]
         };
 
@@ -183,13 +212,39 @@ const GeneratedApp = ({ requirements }) => {
     return (
         <div className="generated-app">
             <div className="app-header">
-                <button onClick={() => navigate('/')} className="back-button">
-                    <ArrowLeft className="icon" />
-                    Back to Builder
-                </button>
+                <div className="header-left">
+                    <button onClick={() => navigate('/')} className="back-button">
+                        <ArrowLeft className="icon" />
+                        Back to Builder
+                    </button>
+                </div>
                 <div className="header-content">
                     <h1>{requirements.appName}</h1>
                     <p>🎉 Your AI-Generated Application Interface</p>
+                </div>
+                <div className="header-right">
+                    <button
+                        onClick={handleSaveApp}
+                        className={`save-button ${isSaved ? 'saved' : ''}`}
+                        disabled={isSaving || isSaved}
+                    >
+                        {isSaved ? (
+                            <>
+                                <Check className="icon" />
+                                Saved!
+                            </>
+                        ) : isSaving ? (
+                            <>
+                                <Save className="icon spinning" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="icon" />
+                                Save App
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
 
@@ -332,8 +387,8 @@ const GeneratedApp = ({ requirements }) => {
                             <div className="entity-list">
                                 {requirements.entities.map((entity, index) => (
                                     <span key={index} className="entity-badge">
-                    {entity}
-                  </span>
+                                        {entity}
+                                    </span>
                                 ))}
                             </div>
                         </div>
@@ -343,8 +398,8 @@ const GeneratedApp = ({ requirements }) => {
                             <div className="role-list">
                                 {requirements.roles.map((role, index) => (
                                     <span key={index} className="role-badge">
-                    {role}
-                  </span>
+                                        {role}
+                                    </span>
                                 ))}
                             </div>
                         </div>
