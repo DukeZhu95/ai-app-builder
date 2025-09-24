@@ -1,4 +1,12 @@
 /* Global Styles and Reset */
+html {
+    height: 100%;
+}
+
+#root {
+    height: 100%;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -13,8 +21,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #333;
-    min-height: 100vh;
-    overflow-x: hidden;
+    height: 100%;
+    overflow: hidden;
 }
 
 /* Global Animations */

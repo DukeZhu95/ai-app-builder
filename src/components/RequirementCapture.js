@@ -6,33 +6,92 @@ import axios from 'axios';
 const RequirementCapture = ({ onRequirementsGenerated }) => {
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
-    const [extractedRequirements, setExtractedRequirements] = useState(null);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!description.trim()) return;
 
+        // 输入验证
+        if (description.trim().length < 20) {
+            setError('Please provide a more detailed description (at least 20 characters)');
+            return;
+        }
+
         setLoading(true);
+        setError('');
+
         try {
-            // Call real backend API to extract requirements
+            console.log('Sending request to extract requirements...');
+
+            // 使用正确的端点
             const response = await axios.post('http://localhost:5000/api/extract-requirements', {
                 description: description.trim()
+            }, {
+                timeout: 30000,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             });
 
-            const requirements = response.data;
+            console.log('API Response:', response.data);
 
-            setExtractedRequirements(requirements);
-            onRequirementsGenerated(requirements);
+            // 后端直接返回需求数据，不需要 .requirements 嵌套
+            if (response.data && response.data.appName) {
+                const requirements = {
+                    appName: response.data.appName,
+                    entities: response.data.entities || [],
+                    roles: response.data.roles || [],
+                    features: response.data.features || [],
+                    metadata: {
+                        ...response.data.metadata,
+                        originalDescription: description.trim(),
+                        timestamp: new Date().toISOString()
+                    }
+                };
 
-            // Navigate to generated app after showing the results
-            setTimeout(() => {
-                navigate('/generated-app');
-            }, 3000);
+                console.log('Generated requirements:', requirements);
+
+                // 直接传递给父组件并跳转，不显示中间结果
+                onRequirementsGenerated(requirements);
+
+                // 短暂延迟后跳转，让用户看到成功状态
+                setTimeout(() => {
+                    navigate('/generated-app');
+                }, 800);
+
+            } else {
+                throw new Error('Invalid response format from server');
+            }
 
         } catch (error) {
             console.error('Error extracting requirements:', error);
-            alert('Failed to extract requirements. Please try again.');
+
+            let errorMessage = 'Failed to extract requirements. ';
+
+            if (error.code === 'ECONNABORTED') {
+                errorMessage += 'Request timed out. Please try again.';
+            } else if (error.response) {
+                const status = error.response.status;
+                const serverMessage = error.response.data?.error || error.response.data?.message;
+
+                if (status === 500) {
+                    errorMessage += serverMessage || 'Server error. Please try again later.';
+                } else if (status === 400) {
+                    errorMessage += serverMessage || 'Invalid request. Please check your input.';
+                } else if (status === 429) {
+                    errorMessage += 'Too many requests. Please wait a moment and try again.';
+                } else {
+                    errorMessage += `Server error (${status}). Please try again.`;
+                }
+            } else if (error.request) {
+                errorMessage += 'No response from server. Please check your internet connection.';
+            } else {
+                errorMessage += error.message || 'Unknown error occurred.';
+            }
+
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -46,7 +105,10 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
     ];
 
     const selectExample = (example) => {
-        setDescription(example);
+        if (!loading) {
+            setDescription(example);
+            setError(''); // 清除之前的错误
+        }
     };
 
     return (
@@ -64,16 +126,26 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
                         <textarea
                             id="description"
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(e) => {
+                                setDescription(e.target.value);
+                                setError(''); // 清除错误当用户修改输入时
+                            }}
                             placeholder="Describe your app idea in detail..."
                             rows={6}
                             className="description-input"
                             disabled={loading}
+                            maxLength={2000}
                         />
                         <div className="char-count">
                             {description.length} characters
                         </div>
                     </div>
+
+                    {error && (
+                        <div className="error-message">
+                            {error}
+                        </div>
+                    )}
 
                     <div className="example-prompts">
                         <h4>Need inspiration? Try these examples:</h4>
@@ -111,49 +183,6 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
                     </button>
                 </form>
             </div>
-
-            {extractedRequirements && (
-                <div className="extracted-requirements">
-                    <div className="requirements-header">
-                        <Sparkles className="icon" />
-                        <h3>AI Extracted Requirements</h3>
-                    </div>
-                    <div className="requirements-display">
-                        <div className="requirement-item">
-                            <strong>📱 App Name:</strong>
-                            <span className="highlight">{extractedRequirements.appName}</span>
-                        </div>
-                        <div className="requirement-item">
-                            <strong>🗃️ Entities ({extractedRequirements.entities.length}):</strong>
-                            <div className="tags">
-                                {extractedRequirements.entities.map((entity, index) => (
-                                    <span key={index} className="tag entity-tag">{entity}</span>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="requirement-item">
-                            <strong>👥 Roles ({extractedRequirements.roles.length}):</strong>
-                            <div className="tags">
-                                {extractedRequirements.roles.map((role, index) => (
-                                    <span key={index} className="tag role-tag">{role}</span>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="requirement-item">
-                            <strong>⚡ Features ({extractedRequirements.features.length}):</strong>
-                            <div className="tags">
-                                {extractedRequirements.features.map((feature, index) => (
-                                    <span key={index} className="tag feature-tag">{feature}</span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="redirect-message">
-                        <Loader className="icon spinning" />
-                        Generating your custom app interface...
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Database, Settings, Plus, Edit, Trash2, Eye, Save, Check } from 'lucide-react';
+import { ArrowLeft, User, Database, Settings, Plus, Eye, Save, Check } from 'lucide-react';
 import axios from 'axios';
+import '../styles/GeneratedApp.css';
 
 const GeneratedApp = ({ requirements }) => {
     const [activeTab, setActiveTab] = useState(requirements.roles[0] || 'Main');
@@ -10,6 +11,65 @@ const GeneratedApp = ({ requirements }) => {
     const [isSaving, setIsSaving] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const navigate = useNavigate();
+
+    // Hide the main portal header when component mounts
+    useEffect(() => {
+        const mainHeader = document.querySelector('.App .app-header');
+        if (mainHeader) {
+            mainHeader.style.display = 'none';
+        }
+
+        // 使用 cssText 强制设置样式，确保底部留有空间
+        const generatedApp = document.querySelector('.generated-app');
+        if (generatedApp) {
+            generatedApp.style.cssText = `
+                height: calc(100vh - 24px) !important;
+                margin-bottom: 24px !important;
+                border: 2px solid #2d3748 !important;
+                border-radius: 16px !important;
+                background: #f8fafc !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+            `;
+        }
+
+        // 确保全局样式不被覆盖
+        document.documentElement.style.height = '100%';
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+
+        const rootElement = document.getElementById('root');
+        if (rootElement) {
+            rootElement.style.height = '100%';
+        }
+
+        // Show the main portal header again when component unmounts
+        return () => {
+            const mainHeader = document.querySelector('.App .app-header');
+            if (mainHeader) {
+                mainHeader.style.display = 'block';
+            }
+
+            // 恢复样式
+            const generatedApp = document.querySelector('.generated-app');
+            if (generatedApp) {
+                generatedApp.style.cssText = '';
+            }
+
+            document.documentElement.style.height = '';
+            document.documentElement.style.overflow = '';
+            document.body.style.height = '';
+            document.body.style.overflow = '';
+
+            const rootElement = document.getElementById('root');
+            if (rootElement) {
+                rootElement.style.height = '';
+            }
+        };
+    }, []);
 
     // Save app to database
     const handleSaveApp = async () => {
@@ -25,7 +85,6 @@ const GeneratedApp = ({ requirements }) => {
 
             console.log('App saved successfully:', response.data);
             setIsSaved(true);
-
             setTimeout(() => setIsSaved(false), 3000);
 
         } catch (error) {
@@ -39,28 +98,41 @@ const GeneratedApp = ({ requirements }) => {
     // Generate appropriate form fields for each entity
     const generateEntityFields = (entityName) => {
         const fieldMappings = {
-            'Student': [
-                { name: 'name', type: 'text', label: 'Full Name', placeholder: 'Enter student name' },
-                { name: 'email', type: 'email', label: 'Email Address', placeholder: 'student@example.com' },
-                { name: 'studentId', type: 'text', label: 'Student ID', placeholder: 'STU001' },
-                { name: 'age', type: 'number', label: 'Age', placeholder: '18' }
+            'Product': [
+                { name: 'name', type: 'text', label: 'Name', placeholder: 'Product name' },
+                { name: 'price', type: 'number', label: 'Price', placeholder: '0.00' },
+                { name: 'description', type: 'textarea', label: 'Description', placeholder: 'Product description' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Inactive', 'Out of Stock'] }
             ],
-            'Post': [
-                { name: 'title', type: 'text', label: 'Post Title', placeholder: 'Enter post title' },
-                { name: 'content', type: 'textarea', label: 'Content', placeholder: 'Write your post content...' },
-                { name: 'category', type: 'select', label: 'Category', options: ['Technology', 'Lifestyle', 'Business', 'Education'] },
-                { name: 'status', type: 'select', label: 'Status', options: ['Draft', 'Published', 'Archived'] }
+            'Order': [
+                { name: 'orderNumber', type: 'text', label: 'Order #', placeholder: 'ORD001' },
+                { name: 'customer', type: 'text', label: 'Customer', placeholder: 'Customer name' },
+                { name: 'total', type: 'number', label: 'Total', placeholder: '0.00' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Pending', 'Processing', 'Shipped', 'Delivered'] }
+            ],
+            'Customer': [
+                { name: 'name', type: 'text', label: 'Name', placeholder: 'Customer name' },
+                { name: 'email', type: 'email', label: 'Email', placeholder: 'email@example.com' },
+                { name: 'phone', type: 'tel', label: 'Phone', placeholder: '+1234567890' },
+                { name: 'address', type: 'textarea', label: 'Address', placeholder: 'Address' }
             ],
             'User': [
-                { name: 'name', type: 'text', label: 'Full Name', placeholder: 'Enter full name' },
-                { name: 'email', type: 'email', label: 'Email Address', placeholder: 'user@example.com' },
+                { name: 'name', type: 'text', label: 'Name', placeholder: 'Full name' },
+                { name: 'email', type: 'email', label: 'Email', placeholder: 'email@example.com' },
                 { name: 'role', type: 'select', label: 'Role', options: requirements.roles },
-                { name: 'phone', type: 'tel', label: 'Phone Number', placeholder: '+1234567890' }
+                { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Inactive'] }
             ],
-            'Comment': [
-                { name: 'author', type: 'text', label: 'Author', placeholder: 'Comment author' },
-                { name: 'content', type: 'textarea', label: 'Comment', placeholder: 'Write your comment...' },
-                { name: 'status', type: 'select', label: 'Status', options: ['Approved', 'Pending', 'Rejected'] }
+            'Inventory': [
+                { name: 'itemName', type: 'text', label: 'Item Name', placeholder: 'Item name' },
+                { name: 'quantity', type: 'number', label: 'Quantity', placeholder: '0' },
+                { name: 'location', type: 'text', label: 'Location', placeholder: 'Storage location' },
+                { name: 'status', type: 'select', label: 'Status', options: ['In Stock', 'Low Stock', 'Out of Stock'] }
+            ],
+            'Seller': [
+                { name: 'name', type: 'text', label: 'Seller Name', placeholder: 'Business name' },
+                { name: 'email', type: 'email', label: 'Email', placeholder: 'seller@example.com' },
+                { name: 'phone', type: 'tel', label: 'Phone', placeholder: '+1234567890' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Pending', 'Suspended'] }
             ]
         };
 
@@ -71,35 +143,45 @@ const GeneratedApp = ({ requirements }) => {
         ];
     };
 
-    // Generate role-specific features and actions
+    // Generate role-specific features (compact version)
     const generateRoleFeatures = (role) => {
         const roleFeatureMappings = {
-            'Writer': [
-                { name: 'Create Post', icon: Plus, color: 'blue', description: 'Write and publish new posts' },
-                { name: 'Edit Posts', icon: Edit, color: 'green', description: 'Modify existing content' },
-                { name: 'View Analytics', icon: Eye, color: 'purple', description: 'Track post performance' }
-            ],
-            'Moderator': [
-                { name: 'Manage Content', icon: Database, color: 'blue', description: 'Oversee all content' },
-                { name: 'Review Comments', icon: Eye, color: 'orange', description: 'Moderate user comments' },
-                { name: 'User Management', icon: User, color: 'red', description: 'Manage user accounts' }
-            ],
-            'Reader': [
-                { name: 'Browse Posts', icon: Eye, color: 'blue', description: 'Explore published content' },
-                { name: 'Comment', icon: Plus, color: 'green', description: 'Engage with posts' },
-                { name: 'Save Favorites', icon: Database, color: 'purple', description: 'Bookmark content' }
-            ],
-            'User': [
-                { name: 'View Content', icon: Eye, color: 'blue', description: 'Browse available content' },
+            'Admin': [
+                { name: 'View Data', icon: Eye, color: 'blue', description: 'Browse system data' },
                 { name: 'Create Entry', icon: Plus, color: 'green', description: 'Add new entries' },
-                { name: 'Profile Settings', icon: Settings, color: 'gray', description: 'Manage account' }
+                { name: 'Settings', icon: Settings, color: 'gray', description: 'Access settings' }
+            ],
+            'Customer': [
+                { name: 'Browse Products', icon: Eye, color: 'blue', description: 'View available products' },
+                { name: 'Place Order', icon: Plus, color: 'green', description: 'Create new orders' },
+                { name: 'Order History', icon: Database, color: 'gray', description: 'View past orders' }
+            ],
+            'Seller': [
+                { name: 'Manage Products', icon: Database, color: 'blue', description: 'Handle product catalog' },
+                { name: 'Process Orders', icon: Settings, color: 'green', description: 'Fulfill orders' },
+                { name: 'Sales Reports', icon: Eye, color: 'gray', description: 'View analytics' }
+            ],
+            'Teacher': [
+                { name: 'Manage Courses', icon: Database, color: 'blue', description: 'Create and edit courses' },
+                { name: 'Grade Students', icon: Settings, color: 'green', description: 'Assess student work' },
+                { name: 'View Reports', icon: Eye, color: 'gray', description: 'Student progress reports' }
+            ],
+            'Student': [
+                { name: 'View Courses', icon: Eye, color: 'blue', description: 'Browse available courses' },
+                { name: 'Enroll', icon: Plus, color: 'green', description: 'Join new courses' },
+                { name: 'Track Progress', icon: Database, color: 'gray', description: 'Monitor learning' }
+            ],
+            'Manager': [
+                { name: 'View Reports', icon: Eye, color: 'blue', description: 'Business analytics' },
+                { name: 'Manage Staff', icon: Settings, color: 'green', description: 'Team management' },
+                { name: 'System Settings', icon: Database, color: 'gray', description: 'Configure system' }
             ]
         };
 
         return roleFeatureMappings[role] || [
-            { name: 'View Data', icon: Eye, color: 'blue', description: 'Browse system data' },
-            { name: 'Create Entry', icon: Plus, color: 'green', description: 'Add new entries' },
-            { name: 'Settings', icon: Settings, color: 'gray', description: 'Access settings' }
+            { name: 'View Data', icon: Eye, color: 'blue', description: 'Browse data' },
+            { name: 'Create Entry', icon: Plus, color: 'green', description: 'Add entries' },
+            { name: 'Settings', icon: Settings, color: 'gray', description: 'Settings' }
         ];
     };
 
@@ -112,7 +194,7 @@ const GeneratedApp = ({ requirements }) => {
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        alert(`${activeEntity} data saved successfully! (This is a demo)`);
+        alert(`${activeEntity} data saved successfully! (Demo)`);
         setFormData({});
     };
 
@@ -130,7 +212,7 @@ const GeneratedApp = ({ requirements }) => {
                         onChange={(e) => handleInputChange(name, e.target.value)}
                         placeholder={placeholder}
                         className="form-input textarea"
-                        rows={3}
+                        rows={2}
                     />
                 );
             case 'select':
@@ -165,7 +247,7 @@ const GeneratedApp = ({ requirements }) => {
 
     return (
         <div className="generated-app">
-            {/* Top Header */}
+            {/* Custom Header for Generated App */}
             <div className="app-header">
                 <div className="header-left">
                     <button onClick={() => navigate('/')} className="back-button">
@@ -203,9 +285,9 @@ const GeneratedApp = ({ requirements }) => {
                 </div>
             </div>
 
-            {/* Main Dashboard Layout */}
+            {/* Optimized Dashboard Layout */}
             <div className="dashboard-container">
-                {/* Left Sidebar - Compact Role Navigation + App Specs */}
+                {/* Compact Left Sidebar */}
                 <div className="sidebar">
                     <div className="sidebar-section">
                         <h3>User Roles</h3>
@@ -239,17 +321,17 @@ const GeneratedApp = ({ requirements }) => {
                         </div>
                     </div>
 
-                    {/* App Specifications moved to left sidebar */}
-                    <div className="sidebar-section app-specs-sidebar">
+                    {/* Compact App Specifications */}
+                    <div className="sidebar-section app-specifications">
                         <h3>App Specifications</h3>
 
-                        <div className="spec-item">
-                            <strong>Application:</strong>
-                            <span className="app-name">{requirements.appName}</span>
+                        <div className="spec-card">
+                            <h4>Application</h4>
+                            <div className="app-name">{requirements.appName}</div>
                         </div>
 
-                        <div className="spec-item">
-                            <strong>Entities ({requirements.entities.length}):</strong>
+                        <div className="spec-card">
+                            <h4>Entities ({requirements.entities.length})</h4>
                             <div className="badge-group">
                                 {requirements.entities.map((entity, index) => (
                                     <span key={index} className="badge entity-badge">
@@ -259,8 +341,8 @@ const GeneratedApp = ({ requirements }) => {
                             </div>
                         </div>
 
-                        <div className="spec-item">
-                            <strong>User Roles ({requirements.roles.length}):</strong>
+                        <div className="spec-card">
+                            <h4>User Roles ({requirements.roles.length})</h4>
                             <div className="badge-group">
                                 {requirements.roles.map((role, index) => (
                                     <span key={index} className="badge role-badge">
@@ -270,18 +352,21 @@ const GeneratedApp = ({ requirements }) => {
                             </div>
                         </div>
 
-                        <div className="spec-item">
-                            <strong>Key Features ({requirements.features.length}):</strong>
+                        <div className="spec-card">
+                            <h4>Features ({requirements.features.length})</h4>
                             <ul className="feature-list">
-                                {requirements.features.map((feature, index) => (
+                                {requirements.features.slice(0, 6).map((feature, index) => (
                                     <li key={index}>{feature}</li>
                                 ))}
+                                {requirements.features.length > 6 && (
+                                    <li>+{requirements.features.length - 6} more...</li>
+                                )}
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                {/* Main Content Area - Now takes full remaining width */}
+                {/* Main Content Area - No Scroll */}
                 <div className="main-content">
                     {/* Role Dashboard */}
                     <div className="dashboard-section">
