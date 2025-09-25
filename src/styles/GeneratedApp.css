@@ -6,9 +6,6 @@
     flex-direction: column;
     overflow: hidden;
     margin-bottom: 1.5rem;
-    border: 2px solid #2d3748;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 /* Keep the generated app header visible and functional */

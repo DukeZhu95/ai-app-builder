@@ -19,54 +19,11 @@ const GeneratedApp = ({ requirements }) => {
             mainHeader.style.display = 'none';
         }
 
-        // 使用 cssText 强制设置样式，确保底部留有空间
-        const generatedApp = document.querySelector('.generated-app');
-        if (generatedApp) {
-            generatedApp.style.cssText = `
-                height: calc(100vh - 24px) !important;
-                margin-bottom: 24px !important;
-                border: 2px solid #2d3748 !important;
-                border-radius: 16px !important;
-                background: #f8fafc !important;
-                display: flex !important;
-                flex-direction: column !important;
-                overflow: hidden !important;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
-            `;
-        }
-
-        // 确保全局样式不被覆盖
-        document.documentElement.style.height = '100%';
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.height = '100%';
-        document.body.style.overflow = 'hidden';
-
-        const rootElement = document.getElementById('root');
-        if (rootElement) {
-            rootElement.style.height = '100%';
-        }
-
-        // Show the main portal header again when component unmounts
+        // 清理函数
         return () => {
             const mainHeader = document.querySelector('.App .app-header');
             if (mainHeader) {
                 mainHeader.style.display = 'block';
-            }
-
-            // 恢复样式
-            const generatedApp = document.querySelector('.generated-app');
-            if (generatedApp) {
-                generatedApp.style.cssText = '';
-            }
-
-            document.documentElement.style.height = '';
-            document.documentElement.style.overflow = '';
-            document.body.style.height = '';
-            document.body.style.overflow = '';
-
-            const rootElement = document.getElementById('root');
-            if (rootElement) {
-                rootElement.style.height = '';
             }
         };
     }, []);
@@ -246,187 +203,200 @@ const GeneratedApp = ({ requirements }) => {
     };
 
     return (
-        <div className="generated-app">
-            {/* Custom Header for Generated App */}
-            <div className="app-header">
-                <div className="header-left">
-                    <button onClick={() => navigate('/')} className="back-button">
-                        <ArrowLeft className="icon" />
-                        Back to Builder
-                    </button>
-                </div>
-                <div className="header-content">
-                    <h1>{requirements.appName}</h1>
-                    <p>Your AI-Generated Application Interface</p>
-                </div>
-                <div className="header-right">
-                    <button
-                        onClick={handleSaveApp}
-                        className={`save-button ${isSaved ? 'saved' : ''}`}
-                        disabled={isSaving || isSaved}
-                    >
-                        {isSaved ? (
-                            <>
-                                <Check className="icon" />
-                                Saved!
-                            </>
-                        ) : isSaving ? (
-                            <>
-                                <Save className="icon spinning" />
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="icon" />
-                                Save App
-                            </>
-                        )}
-                    </button>
-                </div>
-            </div>
-
-            {/* Optimized Dashboard Layout */}
-            <div className="dashboard-container">
-                {/* Compact Left Sidebar */}
-                <div className="sidebar">
-                    <div className="sidebar-section">
-                        <h3>User Roles</h3>
-                        <div className="role-buttons">
-                            {requirements.roles.map((role, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setActiveTab(role)}
-                                    className={`role-button ${activeTab === role ? 'active' : ''}`}
-                                >
-                                    <User className="icon" />
-                                    {role}
-                                </button>
-                            ))}
-                        </div>
+        <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            overflow: 'hidden'
+        }}>
+            <div className="generated-app" style={{
+                height: '100%',
+                margin: 0,
+                overflow: 'hidden'
+            }}>
+                {/* Custom Header for Generated App */}
+                <div className="app-header">
+                    <div className="header-left">
+                        <button onClick={() => navigate('/')} className="back-button">
+                            <ArrowLeft className="icon" />
+                            Back to Builder
+                        </button>
                     </div>
-
-                    <div className="sidebar-section">
-                        <h3>Data Management</h3>
-                        <div className="entity-buttons">
-                            {requirements.entities.map((entity, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setActiveEntity(entity)}
-                                    className={`entity-button ${activeEntity === entity ? 'active' : ''}`}
-                                >
-                                    <Database className="icon" />
-                                    {entity}
-                                </button>
-                            ))}
-                        </div>
+                    <div className="header-content">
+                        <h1>{requirements.appName}</h1>
+                        <p>Your AI-Generated Application Interface</p>
                     </div>
+                    <div className="header-right">
+                        <button
+                            onClick={handleSaveApp}
+                            className={`save-button ${isSaved ? 'saved' : ''}`}
+                            disabled={isSaving || isSaved}
+                        >
+                            {isSaved ? (
+                                <>
+                                    <Check className="icon" />
+                                    Saved!
+                                </>
+                            ) : isSaving ? (
+                                <>
+                                    <Save className="icon spinning" />
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="icon" />
+                                    Save App
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
 
-                    {/* Compact App Specifications */}
-                    <div className="sidebar-section app-specifications">
-                        <h3>App Specifications</h3>
-
-                        <div className="spec-card">
-                            <h4>Application</h4>
-                            <div className="app-name">{requirements.appName}</div>
-                        </div>
-
-                        <div className="spec-card">
-                            <h4>Entities ({requirements.entities.length})</h4>
-                            <div className="badge-group">
-                                {requirements.entities.map((entity, index) => (
-                                    <span key={index} className="badge entity-badge">
-                                        {entity}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="spec-card">
-                            <h4>User Roles ({requirements.roles.length})</h4>
-                            <div className="badge-group">
+                {/* Optimized Dashboard Layout */}
+                <div className="dashboard-container">
+                    {/* Compact Left Sidebar */}
+                    <div className="sidebar">
+                        <div className="sidebar-section">
+                            <h3>User Roles</h3>
+                            <div className="role-buttons">
                                 {requirements.roles.map((role, index) => (
-                                    <span key={index} className="badge role-badge">
+                                    <button
+                                        key={index}
+                                        onClick={() => setActiveTab(role)}
+                                        className={`role-button ${activeTab === role ? 'active' : ''}`}
+                                    >
+                                        <User className="icon" />
                                         {role}
-                                    </span>
+                                    </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="spec-card">
-                            <h4>Features ({requirements.features.length})</h4>
-                            <ul className="feature-list">
-                                {requirements.features.slice(0, 6).map((feature, index) => (
-                                    <li key={index}>{feature}</li>
+                        <div className="sidebar-section">
+                            <h3>Data Management</h3>
+                            <div className="entity-buttons">
+                                {requirements.entities.map((entity, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setActiveEntity(entity)}
+                                        className={`entity-button ${activeEntity === entity ? 'active' : ''}`}
+                                    >
+                                        <Database className="icon" />
+                                        {entity}
+                                    </button>
                                 ))}
-                                {requirements.features.length > 6 && (
-                                    <li>+{requirements.features.length - 6} more...</li>
-                                )}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Main Content Area - No Scroll */}
-                <div className="main-content">
-                    {/* Role Dashboard */}
-                    <div className="dashboard-section">
-                        <div className="section-header">
-                            <h2>{activeTab} Dashboard</h2>
-                            <p>Available actions and features</p>
+                            </div>
                         </div>
 
-                        <div className="feature-cards">
-                            {generateRoleFeatures(activeTab).map((feature, index) => {
-                                const IconComponent = feature.icon;
-                                return (
-                                    <div key={index} className={`feature-card ${feature.color}`}>
-                                        <div className="feature-icon-wrapper">
-                                            <IconComponent className="feature-icon" />
-                                        </div>
-                                        <div className="feature-info">
-                                            <h4>{feature.name}</h4>
-                                            <p>{feature.description}</p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                        {/* Compact App Specifications */}
+                        <div className="sidebar-section app-specifications">
+                            <h3>App Specifications</h3>
 
-                    {/* Entity Form Section */}
-                    {activeEntity && (
-                        <div className="form-section">
-                            <div className="section-header">
-                                <h2>Add New {activeEntity}</h2>
-                                <p>Fill in the details to create a new {activeEntity.toLowerCase()}</p>
+                            <div className="spec-card">
+                                <h4>Application</h4>
+                                <div className="app-name">{requirements.appName}</div>
                             </div>
 
-                            <form onSubmit={handleFormSubmit} className="entity-form-modern">
-                                <div className="form-fields">
-                                    {generateEntityFields(activeEntity).map((field, index) => (
-                                        <div key={index} className="form-group">
-                                            <label className="form-label">{field.label}</label>
-                                            {renderFormField(field)}
-                                        </div>
+                            <div className="spec-card">
+                                <h4>Entities ({requirements.entities.length})</h4>
+                                <div className="badge-group">
+                                    {requirements.entities.map((entity, index) => (
+                                        <span key={index} className="badge entity-badge">
+                                            {entity}
+                                        </span>
                                     ))}
                                 </div>
+                            </div>
 
-                                <div className="form-actions">
-                                    <button type="submit" className="btn-primary">
-                                        <Plus className="icon" />
-                                        Add {activeEntity}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn-secondary"
-                                        onClick={() => setFormData({})}
-                                    >
-                                        Clear Form
-                                    </button>
+                            <div className="spec-card">
+                                <h4>User Roles ({requirements.roles.length})</h4>
+                                <div className="badge-group">
+                                    {requirements.roles.map((role, index) => (
+                                        <span key={index} className="badge role-badge">
+                                            {role}
+                                        </span>
+                                    ))}
                                 </div>
-                            </form>
+                            </div>
+
+                            <div className="spec-card">
+                                <h4>Features ({requirements.features.length})</h4>
+                                <ul className="feature-list">
+                                    {requirements.features.slice(0, 6).map((feature, index) => (
+                                        <li key={index}>{feature}</li>
+                                    ))}
+                                    {requirements.features.length > 6 && (
+                                        <li>+{requirements.features.length - 6} more...</li>
+                                    )}
+                                </ul>
+                            </div>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Main Content Area - No Scroll */}
+                    <div className="main-content">
+                        {/* Role Dashboard */}
+                        <div className="dashboard-section">
+                            <div className="section-header">
+                                <h2>{activeTab} Dashboard</h2>
+                                <p>Available actions and features</p>
+                            </div>
+
+                            <div className="feature-cards">
+                                {generateRoleFeatures(activeTab).map((feature, index) => {
+                                    const IconComponent = feature.icon;
+                                    return (
+                                        <div key={index} className={`feature-card ${feature.color}`}>
+                                            <div className="feature-icon-wrapper">
+                                                <IconComponent className="feature-icon" />
+                                            </div>
+                                            <div className="feature-info">
+                                                <h4>{feature.name}</h4>
+                                                <p>{feature.description}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Entity Form Section */}
+                        {activeEntity && (
+                            <div className="form-section">
+                                <div className="section-header">
+                                    <h2>Add New {activeEntity}</h2>
+                                    <p>Fill in the details to create a new {activeEntity.toLowerCase()}</p>
+                                </div>
+
+                                <form onSubmit={handleFormSubmit} className="entity-form-modern">
+                                    <div className="form-fields">
+                                        {generateEntityFields(activeEntity).map((field, index) => (
+                                            <div key={index} className="form-group">
+                                                <label className="form-label">{field.label}</label>
+                                                {renderFormField(field)}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="form-actions">
+                                        <button type="submit" className="btn-primary">
+                                            <Plus className="icon" />
+                                            Add {activeEntity}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn-secondary"
+                                            onClick={() => setFormData({})}
+                                        >
+                                            Clear Form
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
