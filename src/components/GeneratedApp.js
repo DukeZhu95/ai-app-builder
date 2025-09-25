@@ -90,6 +90,42 @@ const GeneratedApp = ({ requirements }) => {
                 { name: 'email', type: 'email', label: 'Email', placeholder: 'seller@example.com' },
                 { name: 'phone', type: 'tel', label: 'Phone', placeholder: '+1234567890' },
                 { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Pending', 'Suspended'] }
+            ],
+            'Student': [
+                { name: 'name', type: 'text', label: 'Name', placeholder: 'Student name' },
+                { name: 'email', type: 'email', label: 'Email', placeholder: 'student@example.com' },
+                { name: 'studentId', type: 'text', label: 'Student ID', placeholder: 'STU001' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Inactive', 'Graduated'] }
+            ],
+            'Course': [
+                { name: 'title', type: 'text', label: 'Course Title', placeholder: 'Course name' },
+                { name: 'code', type: 'text', label: 'Course Code', placeholder: 'CS101' },
+                { name: 'credits', type: 'number', label: 'Credits', placeholder: '3' },
+                { name: 'description', type: 'textarea', label: 'Description', placeholder: 'Course description' }
+            ],
+            'Grade': [
+                { name: 'student', type: 'text', label: 'Student', placeholder: 'Student name' },
+                { name: 'course', type: 'text', label: 'Course', placeholder: 'Course name' },
+                { name: 'grade', type: 'select', label: 'Grade', options: ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'] },
+                { name: 'date', type: 'date', label: 'Date', placeholder: '' }
+            ],
+            'Teacher': [
+                { name: 'name', type: 'text', label: 'Name', placeholder: 'Teacher name' },
+                { name: 'email', type: 'email', label: 'Email', placeholder: 'teacher@example.com' },
+                { name: 'department', type: 'text', label: 'Department', placeholder: 'Department' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Inactive'] }
+            ],
+            'Admin': [
+                { name: 'name', type: 'text', label: 'Name', placeholder: 'Admin name' },
+                { name: 'email', type: 'email', label: 'Email', placeholder: 'admin@example.com' },
+                { name: 'role', type: 'select', label: 'Role', options: ['Super Admin', 'Admin', 'Moderator'] },
+                { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Inactive'] }
+            ],
+            'Report': [
+                { name: 'title', type: 'text', label: 'Report Title', placeholder: 'Report name' },
+                { name: 'type', type: 'select', label: 'Type', options: ['Sales', 'Financial', 'User Activity', 'System'] },
+                { name: 'dateRange', type: 'text', label: 'Date Range', placeholder: 'e.g., January 2024' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Draft', 'Published', 'Archived'] }
             ]
         };
 
@@ -254,9 +290,9 @@ const GeneratedApp = ({ requirements }) => {
                     </div>
                 </div>
 
-                {/* Optimized Dashboard Layout */}
+                {/* 三列布局：左侧边栏 + 主内容 + 右侧规格 */}
                 <div className="dashboard-container">
-                    {/* Compact Left Sidebar */}
+                    {/* 左侧边栏 - 只保留角色和实体管理 */}
                     <div className="sidebar">
                         <div className="sidebar-section">
                             <h3>User Roles</h3>
@@ -289,53 +325,9 @@ const GeneratedApp = ({ requirements }) => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Compact App Specifications */}
-                        <div className="sidebar-section app-specifications">
-                            <h3>App Specifications</h3>
-
-                            <div className="spec-card">
-                                <h4>Application</h4>
-                                <div className="app-name">{requirements.appName}</div>
-                            </div>
-
-                            <div className="spec-card">
-                                <h4>Entities ({requirements.entities.length})</h4>
-                                <div className="badge-group">
-                                    {requirements.entities.map((entity, index) => (
-                                        <span key={index} className="badge entity-badge">
-                                            {entity}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="spec-card">
-                                <h4>User Roles ({requirements.roles.length})</h4>
-                                <div className="badge-group">
-                                    {requirements.roles.map((role, index) => (
-                                        <span key={index} className="badge role-badge">
-                                            {role}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="spec-card">
-                                <h4>Features ({requirements.features.length})</h4>
-                                <ul className="feature-list">
-                                    {requirements.features.slice(0, 6).map((feature, index) => (
-                                        <li key={index}>{feature}</li>
-                                    ))}
-                                    {requirements.features.length > 6 && (
-                                        <li>+{requirements.features.length - 6} more...</li>
-                                    )}
-                                </ul>
-                            </div>
-                        </div>
                     </div>
 
-                    {/* Main Content Area - No Scroll */}
+                    {/* 主内容区域 */}
                     <div className="main-content">
                         {/* Role Dashboard */}
                         <div className="dashboard-section">
@@ -396,6 +388,54 @@ const GeneratedApp = ({ requirements }) => {
                                 </form>
                             </div>
                         )}
+                    </div>
+
+                    {/* 右侧App Specifications */}
+                    <div className="specifications-panel">
+                        <div className="spec-header">
+                            <h3>App Specifications</h3>
+                        </div>
+
+                        <div className="spec-content">
+                            <div className="spec-card">
+                                <h4>Application</h4>
+                                <div className="app-name">{requirements.appName}</div>
+                            </div>
+
+                            <div className="spec-card">
+                                <h4>Entities ({requirements.entities.length})</h4>
+                                <div className="badge-group">
+                                    {requirements.entities.map((entity, index) => (
+                                        <span key={index} className="badge entity-badge">
+                                            {entity}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="spec-card">
+                                <h4>User Roles ({requirements.roles.length})</h4>
+                                <div className="badge-group">
+                                    {requirements.roles.map((role, index) => (
+                                        <span key={index} className="badge role-badge">
+                                            {role}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="spec-card">
+                                <h4>Features ({requirements.features.length})</h4>
+                                <ul className="feature-list">
+                                    {requirements.features.slice(0, 8).map((feature, index) => (
+                                        <li key={index}>{feature}</li>
+                                    ))}
+                                    {requirements.features.length > 8 && (
+                                        <li className="more-features">+{requirements.features.length - 8} more features...</li>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
