@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Database, Settings, Plus, Eye, Save, Check } from 'lucide-react';
+import { ArrowLeft, User, Database, Settings, Plus, Eye, Save, Check, X, CheckCircle, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 import '../styles/GeneratedApp.css';
 
@@ -10,7 +10,24 @@ const GeneratedApp = ({ requirements }) => {
     const [formData, setFormData] = useState({});
     const [isSaving, setIsSaving] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [toasts, setToasts] = useState([]);
     const navigate = useNavigate();
+
+    // Toast notification system
+    const addToast = (message, type = 'success', duration = 3000) => {
+        const id = Date.now() + Math.random();
+        const newToast = { id, message, type, duration };
+
+        setToasts(prev => [...prev, newToast]);
+
+        setTimeout(() => {
+            removeToast(id);
+        }, duration);
+    };
+
+    const removeToast = (id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
 
     // Hide the main portal header when component mounts
     useEffect(() => {
@@ -42,11 +59,12 @@ const GeneratedApp = ({ requirements }) => {
 
             console.log('App saved successfully:', response.data);
             setIsSaved(true);
+            addToast('Application saved successfully!', 'success');
             setTimeout(() => setIsSaved(false), 3000);
 
         } catch (error) {
             console.error('Error saving app:', error);
-            alert('Failed to save app. Please try again.');
+            addToast('Failed to save application. Please try again.', 'error');
         } finally {
             setIsSaving(false);
         }
@@ -187,8 +205,35 @@ const GeneratedApp = ({ requirements }) => {
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        alert(`${activeEntity} data saved successfully! (Demo)`);
+
+        // 验证表单数据
+        const fields = generateEntityFields(activeEntity);
+        const emptyFields = fields.filter(field => !formData[field.name]);
+
+        if (emptyFields.length > 0) {
+            addToast(`Please fill in all required fields: ${emptyFields.map(f => f.label).join(', ')}`, 'error');
+            return;
+        }
+
+        addToast(`${activeEntity} data saved successfully!`, 'success');
         setFormData({});
+    };
+
+    // Toast Component
+    const Toast = ({ toast, onClose }) => {
+        const { message, type } = toast;
+
+        return (
+            <div className={`toast toast-${type}`}>
+                <div className="toast-icon">
+                    {type === 'success' ? <CheckCircle className="icon" /> : <AlertCircle className="icon" />}
+                </div>
+                <div className="toast-message">{message}</div>
+                <button className="toast-close" onClick={() => onClose(toast.id)}>
+                    <X className="icon" />
+                </button>
+            </div>
+        );
     };
 
     const renderFormField = (field) => {
@@ -252,6 +297,17 @@ const GeneratedApp = ({ requirements }) => {
                 margin: 0,
                 overflow: 'hidden'
             }}>
+                {/* Toast Container */}
+                <div className="toast-container">
+                    {toasts.map(toast => (
+                        <Toast
+                            key={toast.id}
+                            toast={toast}
+                            onClose={removeToast}
+                        />
+                    ))}
+                </div>
+
                 {/* Custom Header for Generated App */}
                 <div className="app-header">
                     <div className="header-left">
