@@ -2,6 +2,7 @@
 @import './styles/globals.css';
 @import './styles/RequirementCapture.css';
 @import './styles/GeneratedApp.css';
+@import './styles/SavedApps.css';
 
 /* Main App Container */
 .App {
@@ -9,11 +10,10 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* CSS变量定义头部高度 */
     --header-height: 160px;
 }
 
-/* Responsive Header Styles */
+/* App Header Styles */
 .app-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -53,6 +53,51 @@
     font-weight: 500;
 }
 
+/* 添加缺失的导航样式 */
+.app-navigation {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.nav-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.nav-link.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nav-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* App Main Content */
 .app-main {
     flex: 1;
     padding: 1rem;
@@ -62,7 +107,6 @@
     justify-content: center;
     min-height: 0;
     overflow: hidden;
-    /* Dynamic max-width based on screen size */
     max-width: min(100%, 100vw);
     margin: 0 auto;
     padding-top: 0;
@@ -254,117 +298,13 @@
     margin-bottom: 2rem;
 }
 
-/* OPTIMIZED RESPONSIVE DESIGN */
-
-/* Extra Large Screens (27"+ monitors - 2200px+) */
-@media (min-width: 2200px) {
-    .app-header {
-        padding: 3rem 4rem 2.5rem;
-    }
-
-    .app-header h1 {
-        font-size: 3.5rem;
-        margin-bottom: 0.8rem;
-    }
-
-    .app-header p {
-        font-size: 1.4rem;
-    }
-
-    .app-main {
-        padding: 2rem;
-    }
-
-    .section-header h2 {
-        font-size: 2.4rem;
-        margin-bottom: 0.8rem;
-    }
-
-    .section-header p {
-        font-size: 1.2rem;
-    }
-
-    .feature-cards {
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 2rem;
-    }
-
-    .feature-card {
-        padding: 2rem;
-    }
-
-    .feature-icon-wrapper {
-        width: 50px;
-        height: 50px;
-    }
-
-    .feature-icon {
-        width: 26px;
-        height: 26px;
-    }
-
-    .feature-info h4 {
-        font-size: 1.2rem;
-    }
-
-    .feature-info p {
-        font-size: 1rem;
-    }
+/* Float Animation */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
 }
 
-/* Large Screens (1920px-2200px) */
-@media (min-width: 1600px) and (max-width: 2199px) {
-    .app-header {
-        padding: 2.5rem 3rem 2rem;
-    }
-
-    .app-header h1 {
-        font-size: 3rem;
-        margin-bottom: 0.6rem;
-    }
-
-    .app-header p {
-        font-size: 1.2rem;
-    }
-
-    .app-main {
-        padding: 1.5rem;
-    }
-
-    .section-header h2 {
-        font-size: 2rem;
-    }
-
-    .section-header p {
-        font-size: 1.1rem;
-    }
-
-    .feature-cards {
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 1.8rem;
-    }
-}
-
-/* Standard Desktop (1200px-1600px) */
-@media (min-width: 1200px) and (max-width: 1599px) {
-    .app-header {
-        padding: 2rem 2.5rem 1.5rem;
-    }
-
-    .app-header h1 {
-        font-size: 2.8rem;
-    }
-
-    .app-header p {
-        font-size: 1.1rem;
-    }
-
-    .app-main {
-        padding: 1rem;
-    }
-}
-
-/* Tablet/Small Laptop (900px-1199px) */
+/* RESPONSIVE DESIGN */
 @media (max-width: 1199px) {
     .app-header {
         padding: 1.8rem 2rem 1.3rem;
@@ -377,6 +317,15 @@
 
     .app-header p {
         font-size: 1rem;
+    }
+
+    .app-navigation {
+        padding: 0.4rem 1.5rem;
+    }
+
+    .nav-link {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
     }
 
     .app-main {
@@ -397,7 +346,6 @@
     }
 }
 
-/* Tablet Portrait (768px-900px) */
 @media (max-width: 900px) {
     .app-header {
         padding: 1.5rem 1.5rem 1rem;
@@ -410,6 +358,17 @@
 
     .app-header p {
         font-size: 0.95rem;
+    }
+
+    .app-navigation {
+        padding: 0.3rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-link {
+        justify-content: center;
+        padding: 0.5rem 1rem;
     }
 
     .app-main {
@@ -428,7 +387,6 @@
     }
 }
 
-/* Mobile Landscape (600px-768px) */
 @media (max-width: 768px) {
     .app-header {
         padding: 1.2rem 1rem 0.8rem;
@@ -440,6 +398,20 @@
 
     .app-header p {
         font-size: 0.9rem;
+    }
+
+    .app-navigation {
+        padding: 0.2rem 0.5rem;
+    }
+
+    .nav-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .nav-icon {
+        width: 16px;
+        height: 16px;
     }
 
     .app-main {
@@ -474,7 +446,6 @@
     }
 }
 
-/* Mobile Portrait (max-width: 600px) */
 @media (max-width: 600px) {
     .app-header {
         padding: 1rem 0.8rem 0.6rem;
@@ -486,6 +457,10 @@
 
     .app-header p {
         font-size: 0.85rem;
+    }
+
+    .app-navigation {
+        padding: 0.2rem 0.3rem;
     }
 
     .app-main {
@@ -518,26 +493,7 @@
     }
 }
 
-/* Height-specific optimizations for laptops */
-@media (max-height: 900px) {
-    .app-header {
-        padding: 1.5rem 2rem 1rem;
-    }
-
-    .app-header h1 {
-        font-size: 2.4rem;
-        margin-bottom: 0.3rem;
-    }
-
-    .app-header p {
-        font-size: 1rem;
-    }
-
-    .app-main {
-        padding: 0.8rem;
-    }
-}
-
+/* Height-specific optimizations */
 @media (max-height: 800px) {
     .app-header {
         padding: 1.2rem 1.5rem 0.8rem;
@@ -550,6 +506,10 @@
 
     .app-header p {
         font-size: 0.9rem;
+    }
+
+    .app-navigation {
+        padding: 0.3rem 1.5rem;
     }
 
     .app-main {
@@ -587,6 +547,10 @@
         font-size: 0.8rem;
     }
 
+    .app-navigation {
+        padding: 0.2rem 1rem;
+    }
+
     .app-main {
         padding: 0.3rem;
     }
@@ -614,106 +578,6 @@
     }
 }
 
-/* Combined width and height constraints (small laptops) */
-@media (max-width: 1366px) and (max-height: 768px) {
-    .app-header {
-        padding: 0.8rem 1rem 0.5rem;
-    }
-
-    .app-header h1 {
-        font-size: 1.6rem;
-    }
-
-    .app-header p {
-        font-size: 0.8rem;
-    }
-
-    .app-main {
-        padding: 0.2rem;
-    }
-
-    .dashboard-section, .form-section {
-        padding: 0.8rem;
-        margin: 0.1rem;
-    }
-
-    .section-header {
-        margin-bottom: 0.8rem;
-    }
-
-    .feature-cards {
-        gap: 0.6rem;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-
-    .feature-card {
-        padding: 0.6rem;
-    }
-
-    .feature-icon-wrapper {
-        width: 32px;
-        height: 32px;
-    }
-
-    .feature-icon {
-        width: 16px;
-        height: 16px;
-    }
-}
-
-/* Ultra-wide screens optimization (3440px+) */
-@media (min-width: 3440px) {
-    .app-main {
-        max-width: 2400px;
-        margin: 0 auto;
-    }
-
-    .app-header {
-        padding: 4rem 6rem 3rem;
-    }
-
-    .app-header h1 {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-    }
-
-    .app-header p {
-        font-size: 1.6rem;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .feature-cards {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2.5rem;
-        max-width: 1800px;
-        margin: 0 auto;
-    }
-
-    .feature-card {
-        padding: 2.5rem;
-    }
-
-    .feature-icon-wrapper {
-        width: 60px;
-        height: 60px;
-    }
-
-    .feature-icon {
-        width: 30px;
-        height: 30px;
-    }
-
-    .feature-info h4 {
-        font-size: 1.4rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .feature-info p {
-        font-size: 1.1rem;
-    }
-}
-
 /* Print styles */
 @media print {
     .app-header {
@@ -725,6 +589,10 @@
     }
 
     .app-header::before {
+        display: none !important;
+    }
+
+    .app-navigation {
         display: none !important;
     }
 

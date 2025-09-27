@@ -1,0 +1,447 @@
+/* Saved Apps Viewer Styles - 美观版本 */
+.saved-apps-container {
+    min-height: calc(100vh - 220px);
+    max-height: calc(100vh - 220px);
+    padding: 2rem;
+    background: transparent;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.saved-apps-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.saved-apps-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.saved-apps-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.saved-apps-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%);
+}
+
+.apps-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.apps-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.apps-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+/* Loading and Error States */
+.loading-state, .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: white;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.retry-button {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.retry-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: white;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    opacity: 0.6;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+/* Apps Grid - 现代化卡片布局 */
+.apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* App Card - 完全重新设计 */
+.app-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.app-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* App Card Header */
+.app-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-card-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 8s ease-in-out infinite;
+}
+
+.app-card-header .app-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    color: white;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.app-card-header .app-description {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.app-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+.action-button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.action-button.view {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.action-button.delete {
+    background: rgba(245, 101, 101, 0.8);
+    color: white;
+}
+
+.action-button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.action-button .icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* App Card Body */
+.app-card-body {
+    padding: 1.5rem;
+}
+
+/* App Stats */
+.app-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #667eea;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-icon {
+    width: 16px;
+    height: 16px;
+    color: #667eea;
+    margin-bottom: 0.2rem;
+}
+
+/* App Details */
+.app-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detail-section {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 1rem;
+    border-left: 4px solid #667eea;
+}
+
+.detail-section h4 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #667eea;
+    margin: 0 0 0.6rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.badge-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    text-transform: capitalize;
+}
+
+.entity-badge {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.role-badge {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.feature-list li {
+    font-size: 0.8rem;
+    color: #4a5568;
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.4;
+}
+
+.feature-list li::before {
+    content: '→';
+    color: #667eea;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.feature-list li.more-features {
+    color: #718096;
+    font-style: italic;
+    font-weight: 600;
+}
+
+/* App Footer */
+.app-footer {
+    margin-top: auto;
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.created-date {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.created-date .icon {
+    width: 14px;
+    height: 14px;
+}
+
+.app-status {
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .saved-apps-container {
+        padding: 1rem;
+    }
+
+    .apps-header h1 {
+        font-size: 2rem;
+    }
+
+    .apps-header p {
+        font-size: 1rem;
+    }
+
+    .apps-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .app-card-header {
+        padding: 1rem;
+    }
+
+    .app-card-body {
+        padding: 1rem;
+    }
+
+    .app-stats {
+        padding: 0.8rem;
+    }
+
+    .stat-number {
+        font-size: 1.2rem;
+    }
+
+    .app-name {
+        font-size: 1.2rem;
+    }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
