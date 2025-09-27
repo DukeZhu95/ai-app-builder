@@ -522,12 +522,14 @@
     transition: all 0.3s ease;
     background: white;
     font-family: inherit;
+    color: #2d3748 !important;
 }
 
 .generated-app .form-input:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    color: #2d3748 !important;
 }
 
 .generated-app .form-input.textarea {
@@ -535,6 +537,47 @@
     min-height: 50px;
     max-height: 50px;
     font-family: inherit;
+    color: #2d3748 !important;
+}
+
+.generated-app .form-input.select {
+    color: #2d3748 !important;
+}
+
+.generated-app .form-input::placeholder {
+    color: #a0aec0 !important;
+}
+
+/* 额外确保所有表单元素文字可见性 */
+.generated-app input,
+.generated-app textarea,
+.generated-app select {
+    color: #2d3748 !important;
+}
+
+.generated-app input::placeholder,
+.generated-app textarea::placeholder {
+    color: #a0aec0 !important;
+}
+
+.generated-app select option {
+    color: #2d3748 !important;
+    background: white !important;
+}
+
+/* 确保禁用状态也可见 */
+.generated-app .form-input:disabled {
+    color: #718096 !important;
+    background: #f7fafc !important;
+}
+
+/* 移除任何可能导致白色文字的全局样式 */
+.generated-app .entity-form-modern * {
+    color: inherit;
+}
+
+.generated-app .form-group * {
+    color: inherit;
 }
 
 .generated-app .form-actions {
