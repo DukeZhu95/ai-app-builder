@@ -49,8 +49,16 @@ const GeneratedApp = ({ requirements }) => {
     const handleSaveApp = async () => {
         setIsSaving(true);
         try {
+            const timestamp = Date.now();
+            const uniqueAppName = `${requirements.appName} (${new Date().toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })})`;
+
             const response = await axios.post(`${API_URL}/api/save-app`, {
-                appName: requirements.appName,
+                appName: uniqueAppName,
                 entities: requirements.entities,
                 roles: requirements.roles,
                 features: requirements.features,
@@ -64,7 +72,8 @@ const GeneratedApp = ({ requirements }) => {
 
         } catch (error) {
             console.error('Error saving app:', error);
-            addToast('Failed to save application. Please try again.', 'error');
+            const errorMessage = error.response?.data?.message || 'Failed to save application. Please try again.';
+            addToast(errorMessage, 'error');
         } finally {
             setIsSaving(false);
         }

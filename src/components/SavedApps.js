@@ -33,13 +33,22 @@ const SavedApps = () => {
     };
 
     const deleteApp = async (appId) => {
+        console.log('Attempting to delete app with ID:', appId);
+
+        if (!appId) {
+            alert('Invalid app ID');
+            console.error('App ID is undefined');
+            return;
+        }
+
         if (window.confirm('Are you sure you want to delete this application?')) {
             try {
                 await axios.delete(`${API_URL}/api/apps/${appId}`);
                 setSavedApps(prev => prev.filter(app => app._id !== appId));
             } catch (error) {
                 console.error('Error deleting app:', error);
-                alert('Failed to delete application');
+                const errorMessage = error.response?.data?.message || 'Failed to delete application';
+                alert(errorMessage);
             }
         }
     };
