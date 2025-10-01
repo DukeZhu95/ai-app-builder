@@ -44,7 +44,7 @@ const SavedApps = () => {
         if (window.confirm('Are you sure you want to delete this application?')) {
             try {
                 await axios.delete(`${API_URL}/api/apps/${appId}`);
-                setSavedApps(prev => prev.filter(app => app._id !== appId));
+                setSavedApps(prev => prev.filter(app => app.id !== appId));
             } catch (error) {
                 console.error('Error deleting app:', error);
                 const errorMessage = error.response?.data?.message || 'Failed to delete application';
@@ -103,7 +103,7 @@ const SavedApps = () => {
             ) : (
                 <div className="apps-grid">
                     {savedApps.map((app) => (
-                        <div key={app._id} className="app-card">
+                        <div key={app.id} className="app-card">
                             {/* Card Header with Gradient Background */}
                             <div className="app-card-header">
                                 <div>
@@ -119,7 +119,7 @@ const SavedApps = () => {
                                     </button>
                                     <button
                                         className="action-button delete"
-                                        onClick={() => deleteApp(app._id)}
+                                        onClick={() => deleteApp(app.id)}
                                         title="Delete Application"
                                     >
                                         <Trash2 className="icon" />
