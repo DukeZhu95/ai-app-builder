@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Database, Settings, Plus, Eye, Save, Check, X, CheckCircle, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+import API_URL from '../config';
 import '../styles/GeneratedApp.css';
 
 const GeneratedApp = ({ requirements }) => {
@@ -36,7 +37,6 @@ const GeneratedApp = ({ requirements }) => {
             mainHeader.style.display = 'none';
         }
 
-        // 清理函数
         return () => {
             const mainHeader = document.querySelector('.App .app-header');
             if (mainHeader) {
@@ -49,7 +49,7 @@ const GeneratedApp = ({ requirements }) => {
     const handleSaveApp = async () => {
         setIsSaving(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/save-app', {
+            const response = await axios.post(`${API_URL}/api/save-app`, {
                 appName: requirements.appName,
                 entities: requirements.entities,
                 roles: requirements.roles,
@@ -133,6 +133,12 @@ const GeneratedApp = ({ requirements }) => {
                 { name: 'department', type: 'text', label: 'Department', placeholder: 'Department' },
                 { name: 'status', type: 'select', label: 'Status', options: ['Active', 'Inactive'] }
             ],
+            'Task': [
+                { name: 'name', type: 'text', label: 'Task Name', placeholder: 'Enter task name' },
+                { name: 'description', type: 'textarea', label: 'Description', placeholder: 'Task description' },
+                { name: 'status', type: 'select', label: 'Status', options: ['To Do', 'In Progress', 'Completed'] },
+                { name: 'assignedTo', type: 'text', label: 'Assigned To', placeholder: 'Team member name' }
+            ],
             'Admin': [
                 { name: 'name', type: 'text', label: 'Name', placeholder: 'Admin name' },
                 { name: 'email', type: 'email', label: 'Email', placeholder: 'admin@example.com' },
@@ -144,6 +150,18 @@ const GeneratedApp = ({ requirements }) => {
                 { name: 'type', type: 'select', label: 'Type', options: ['Sales', 'Financial', 'User Activity', 'System'] },
                 { name: 'dateRange', type: 'text', label: 'Date Range', placeholder: 'e.g., January 2024' },
                 { name: 'status', type: 'select', label: 'Status', options: ['Draft', 'Published', 'Archived'] }
+            ],
+            'Post': [
+                { name: 'title', type: 'text', label: 'Title', placeholder: 'Post title' },
+                { name: 'content', type: 'textarea', label: 'Content', placeholder: 'Post content' },
+                { name: 'author', type: 'text', label: 'Author', placeholder: 'Author name' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Draft', 'Published', 'Archived'] }
+            ],
+            'Comment': [
+                { name: 'author', type: 'text', label: 'Author', placeholder: 'Commenter name' },
+                { name: 'content', type: 'textarea', label: 'Comment', placeholder: 'Write a comment...' },
+                { name: 'post', type: 'text', label: 'Post', placeholder: 'Associated post' },
+                { name: 'status', type: 'select', label: 'Status', options: ['Pending', 'Approved', 'Rejected'] }
             ]
         };
 
@@ -154,7 +172,7 @@ const GeneratedApp = ({ requirements }) => {
         ];
     };
 
-    // Generate role-specific features (compact version)
+    // Generate role-specific features
     const generateRoleFeatures = (role) => {
         const roleFeatureMappings = {
             'Admin': [
@@ -182,10 +200,30 @@ const GeneratedApp = ({ requirements }) => {
                 { name: 'Enroll', icon: Plus, color: 'green', description: 'Join new courses' },
                 { name: 'Track Progress', icon: Database, color: 'gray', description: 'Monitor learning' }
             ],
+            'Team Member': [
+                { name: 'View Tasks', icon: Eye, color: 'blue', description: 'Browse assigned tasks' },
+                { name: 'Create Task', icon: Plus, color: 'green', description: 'Add new tasks' },
+                { name: 'Track Progress', icon: Database, color: 'gray', description: 'Monitor task status' }
+            ],
             'Manager': [
                 { name: 'View Reports', icon: Eye, color: 'blue', description: 'Business analytics' },
                 { name: 'Manage Staff', icon: Settings, color: 'green', description: 'Team management' },
                 { name: 'System Settings', icon: Database, color: 'gray', description: 'Configure system' }
+            ],
+            'Writer': [
+                { name: 'Write Posts', icon: Plus, color: 'green', description: 'Create new posts' },
+                { name: 'View Posts', icon: Eye, color: 'blue', description: 'Browse articles' },
+                { name: 'Manage Content', icon: Settings, color: 'gray', description: 'Edit and organize' }
+            ],
+            'Reader': [
+                { name: 'Browse Posts', icon: Eye, color: 'blue', description: 'Read articles' },
+                { name: 'Comment', icon: Plus, color: 'green', description: 'Leave comments' },
+                { name: 'Save Posts', icon: Database, color: 'gray', description: 'Bookmark articles' }
+            ],
+            'Moderator': [
+                { name: 'Review Content', icon: Eye, color: 'blue', description: 'Check submissions' },
+                { name: 'Moderate Comments', icon: Settings, color: 'green', description: 'Manage discussions' },
+                { name: 'User Management', icon: Database, color: 'gray', description: 'Handle users' }
             ]
         };
 
@@ -206,7 +244,6 @@ const GeneratedApp = ({ requirements }) => {
     const handleFormSubmit = (e) => {
         e.preventDefault();
 
-        // 验证表单数据
         const fields = generateEntityFields(activeEntity);
         const emptyFields = fields.filter(field => !formData[field.name]);
 
@@ -346,9 +383,7 @@ const GeneratedApp = ({ requirements }) => {
                     </div>
                 </div>
 
-                {/* 三列布局：左侧边栏 + 主内容 + 右侧规格 */}
                 <div className="dashboard-container">
-                    {/* 左侧边栏 - 只保留角色和实体管理 */}
                     <div className="sidebar">
                         <div className="sidebar-section">
                             <h3>User Roles</h3>
@@ -383,9 +418,7 @@ const GeneratedApp = ({ requirements }) => {
                         </div>
                     </div>
 
-                    {/* 主内容区域 */}
                     <div className="main-content">
-                        {/* Role Dashboard */}
                         <div className="dashboard-section">
                             <div className="section-header">
                                 <h2>{activeTab} Dashboard</h2>
@@ -410,7 +443,6 @@ const GeneratedApp = ({ requirements }) => {
                             </div>
                         </div>
 
-                        {/* Entity Form Section */}
                         {activeEntity && (
                             <div className="form-section">
                                 <div className="section-header">
@@ -446,7 +478,7 @@ const GeneratedApp = ({ requirements }) => {
                         )}
                     </div>
 
-                    {/* 右侧App Specifications */}
+                    {/* Right side App Specifications */}
                     <div className="specifications-panel">
                         <div className="spec-header">
                             <h3>App Specifications</h3>

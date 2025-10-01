@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Eye, Trash2, Calendar, Users, Database, List } from 'lucide-react';
 import axios from 'axios';
 import '../styles/SavedApps.css';
+import API_URL from '../config';
 
 const SavedApps = () => {
     const [savedApps, setSavedApps] = useState([]);
@@ -15,7 +16,7 @@ const SavedApps = () => {
     const fetchSavedApps = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:5000/api/apps');
+            const response = await axios.get(`${API_URL}/api/apps`);
 
             // Adjust according to your API response structure
             if (response.data.apps) {
@@ -34,7 +35,7 @@ const SavedApps = () => {
     const deleteApp = async (appId) => {
         if (window.confirm('Are you sure you want to delete this application?')) {
             try {
-                await axios.delete(`http://localhost:5000/api/apps/${appId}`);
+                await axios.delete(`${API_URL}/api/apps/${appId}`);
                 setSavedApps(prev => prev.filter(app => app._id !== appId));
             } catch (error) {
                 console.error('Error deleting app:', error);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, Loader, Sparkles } from 'lucide-react';
 import axios from 'axios';
+import API_URL from '../config';
 
 const RequirementCapture = ({ onRequirementsGenerated }) => {
     const [description, setDescription] = useState('');
@@ -13,7 +14,6 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
         e.preventDefault();
         if (!description.trim()) return;
 
-        // 输入验证
         if (description.trim().length < 20) {
             setError('Please provide a more detailed description (at least 20 characters)');
             return;
@@ -25,8 +25,7 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
         try {
             console.log('Sending request to extract requirements...');
 
-            // 使用正确的端点
-            const response = await axios.post('http://localhost:5000/api/extract-requirements', {
+            const response = await axios.post(`${API_URL}/api/extract-requirements`, {
                 description: description.trim()
             }, {
                 timeout: 30000,
@@ -37,7 +36,6 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
 
             console.log('API Response:', response.data);
 
-            // 后端直接返回需求数据，不需要 .requirements 嵌套
             if (response.data && response.data.appName) {
                 const requirements = {
                     appName: response.data.appName,
@@ -53,10 +51,8 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
 
                 console.log('Generated requirements:', requirements);
 
-                // 直接传递给父组件并跳转，不显示中间结果
                 onRequirementsGenerated(requirements);
 
-                // 短暂延迟后跳转，让用户看到成功状态
                 setTimeout(() => {
                     navigate('/generated-app');
                 }, 800);
@@ -107,7 +103,7 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
     const selectExample = (example) => {
         if (!loading) {
             setDescription(example);
-            setError(''); // 清除之前的错误
+            setError('');
         }
     };
 
@@ -128,7 +124,7 @@ const RequirementCapture = ({ onRequirementsGenerated }) => {
                             value={description}
                             onChange={(e) => {
                                 setDescription(e.target.value);
-                                setError(''); // 清除错误当用户修改输入时
+                                setError('');
                             }}
                             placeholder="Describe your app idea in detail..."
                             rows={6}
