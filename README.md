@@ -102,7 +102,7 @@ npm install
 ### 3. Install Frontend Dependencies
 
 ```bash
-cd ../src
+cd ..
 npm install
 ```
 
@@ -332,6 +332,11 @@ DELETE /api/apps/:id
 2. Get connection string
 3. Add to backend environment variables
 4. Whitelist deployment server IP
+
+## 🌐 Live Demo
+
+- **Frontend**: https://ai-app-builder-dukes-projects-20e29fcb.vercel.app
+- **Backend API**: https://ai-app-builder-backend-365t.onrender.com
 
 ## 🐛 Troubleshooting
 
